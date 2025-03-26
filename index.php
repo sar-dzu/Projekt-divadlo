@@ -1,35 +1,6 @@
 <?php
 include_once ('parts/header.php');
 ?>
-
-  <!-- ***** Header Area Start ***** -->
-  <header class="header-area header-sticky">
-    <div class="container">
-        <div class="row">
-            <div class="col-12">
-                <nav class="main-nav">
-                    <!-- ***** Logo Start ***** -->
-                    <a href="index.html" class="logo">
-                        <h1>Villa</h1>
-                    </a>
-                    <!-- ***** Logo End ***** -->
-                    <!-- ***** Menu Start ***** -->
-                    <ul class="nav">
-                      <li><a href="index.html" class="active">Home</a></li>
-                      <li><a href="properties.php">Properties</a></li>
-                      <li><a href="property-details.php">Property Details</a></li>
-                      <li><a href="../../../Users/PC1/Documents/GitHub/Projekt-divadlo/contact.php">Contact Us</a></li>
-                      <li><a href="#"><i class="fa fa-calendar"></i> Schedule a visit</a></li>
-                  </ul>   
-                    <a class='menu-trigger'>
-                        <span>Menu</span>
-                    </a>
-                    <!-- ***** Menu End ***** -->
-                </nav>
-            </div>
-        </div>
-    </div>
-  </header>
   <!-- ***** Header Area End ***** -->
 
   <div class="main-banner">
@@ -497,15 +468,12 @@ include_once ('parts/header.php');
     </div>
   </div>
 
-  <footer>
-    <div class="container">
-      <div class="col-lg-8">
-        <p>Copyright © 2048 Villa Agency Co., Ltd. All rights reserved. 
-        
-        Design: <a rel="nofollow" href="https://templatemo.com" target="_blank">TemplateMo</a></p>
-      </div>
-    </div>
-  </footer>
+ <?php
+ $file_path = "parts/footer.php";
+ if (!include $file_path) {
+     echo "Failed to include $file_path";
+ }
+ ?>
 
   <!-- Scripts -->
   <!-- Bootstrap core JavaScript -->

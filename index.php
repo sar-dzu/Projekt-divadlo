@@ -1,5 +1,5 @@
 <?php
-include_once ('parts/header.php');
+include_once('parts/head.php');
 ?>
   <!-- ***** Header Area End ***** -->
 
@@ -122,8 +122,8 @@ include_once ('parts/header.php');
       <div class="row">
         <div class="col-lg-10 offset-lg-1">
           <div class="video-frame">
-            <img src="assets/images/video-frame.jpg" alt="">
-            <a href="https://youtube.com" target="_blank"><i class="fa fa-play"></i></a>
+            <img src="assets/images/katarina.jpg" alt="">
+            <a href="https://www.youtube.com/watch?v=jSeuYOZMBRA&t=72s" target="_blank"><i class="fa fa-play"></i></a>
           </div>
         </div>
       </div>

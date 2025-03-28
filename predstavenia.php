@@ -1,5 +1,5 @@
 <?php
-include_once ('parts/header.php');
+include_once('parts/head.php');
 ?>
 
   <!-- ***** Header Area End ***** -->
@@ -8,7 +8,7 @@ include_once ('parts/header.php');
     <div class="container">
       <div class="row">
         <div class="col-lg-12">
-          <span class="breadcrumb"><a href="#">Home</a> / Properties</span>
+          <span class="breadcrumb"><a href="index.php">Home</a> / Properties</span>
           <h3>Properties</h3>
         </div>
       </div>

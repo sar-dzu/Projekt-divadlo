@@ -34,10 +34,10 @@ include_once('parts/head.php');
       <div class="row properties-box">
         <div class="col-lg-4 col-md-6 align-self-center mb-30 properties-items col-md-6 adv">
           <div class="item">
-            <a href="property-details.php"><img src="assets/images/property-01.jpg" alt=""></a>
+            <a href="detail-predstavenia.php"><img src="assets/images/property-01.jpg" alt=""></a>
             <span class="category">Luxury Villa</span>
             <h6>$2.264.000</h6>
-            <h4><a href="property-details.php">18 Old Street Miami, OR 97219</a></h4>
+            <h4><a href="detail-predstavenia.php">18 Old Street Miami, OR 97219</a></h4>
             <ul>
               <li>Bedrooms: <span>8</span></li>
               <li>Bathrooms: <span>8</span></li>
@@ -46,16 +46,16 @@ include_once('parts/head.php');
               <li>Parking: <span>6 spots</span></li>
             </ul>
             <div class="main-button">
-              <a href="property-details.php">Schedule a visit</a>
+              <a href="detail-predstavenia.php">Schedule a visit</a>
             </div>
           </div>
         </div>
         <div class="col-lg-4 col-md-6 align-self-center mb-30 properties-items col-md-6 str">
           <div class="item">
-            <a href="property-details.php"><img src="assets/images/property-02.jpg" alt=""></a>
+            <a href="detail-predstavenia.php"><img src="assets/images/property-02.jpg" alt=""></a>
             <span class="category">Luxury Villa</span>
             <h6>$1.180.000</h6>
-            <h4><a href="property-details.php">54 New Street Florida, OR 27001</a></h4>
+            <h4><a href="detail-predstavenia.php">54 New Street Florida, OR 27001</a></h4>
             <ul>
               <li>Bedrooms: <span>6</span></li>
               <li>Bathrooms: <span>5</span></li>
@@ -64,16 +64,16 @@ include_once('parts/head.php');
               <li>Parking: <span>8 spots</span></li>
             </ul>
             <div class="main-button">
-              <a href="property-details.php">Schedule a visit</a>
+              <a href="detail-predstavenia.php">Schedule a visit</a>
             </div>
           </div>
         </div>
         <div class="col-lg-4 col-md-6 align-self-center mb-30 properties-items col-md-6 adv rac">
           <div class="item">
-            <a href="property-details.php"><img src="assets/images/property-03.jpg" alt=""></a>
+            <a href="detail-predstavenia.php"><img src="assets/images/property-03.jpg" alt=""></a>
             <span class="category">Luxury Villa</span>
             <h6>$1.460.000</h6>
-            <h4><a href="property-details.php">26 Mid Street Portland, OR 38540</a></h4>
+            <h4><a href="detail-predstavenia.php">26 Mid Street Portland, OR 38540</a></h4>
             <ul>
               <li>Bedrooms: <span>5</span></li>
               <li>Bathrooms: <span>4</span></li>
@@ -82,16 +82,16 @@ include_once('parts/head.php');
               <li>Parking: <span>10 spots</span></li>
             </ul>
             <div class="main-button">
-              <a href="property-details.php">Schedule a visit</a>
+              <a href="detail-predstavenia.php">Schedule a visit</a>
             </div>
           </div>
         </div>
         <div class="col-lg-4 col-md-6 align-self-center mb-30 properties-items col-md-6 str">
           <div class="item">
-            <a href="property-details.php"><img src="assets/images/property-04.jpg" alt=""></a>
+            <a href="detail-predstavenia.php"><img src="assets/images/property-04.jpg" alt=""></a>
             <span class="category">Apartment</span>
             <h6>$584.500</h6>
-            <h4><a href="property-details.php">12 Hope Street Portland, OR 12650</a></h4>
+            <h4><a href="detail-predstavenia.php">12 Hope Street Portland, OR 12650</a></h4>
             <ul>
               <li>Bedrooms: <span>4</span></li>
               <li>Bathrooms: <span>3</span></li>
@@ -100,16 +100,16 @@ include_once('parts/head.php');
               <li>Parking: <span>2 cars</span></li>
             </ul>
             <div class="main-button">
-              <a href="property-details.php">Schedule a visit</a>
+              <a href="detail-predstavenia.php">Schedule a visit</a>
             </div>
           </div>
         </div>
         <div class="col-lg-4 col-md-6 align-self-center mb-30 properties-items col-md-6 rac str">
           <div class="item">
-            <a href="property-details.php"><img src="assets/images/property-05.jpg" alt=""></a>
+            <a href="detail-predstavenia.php"><img src="assets/images/property-05.jpg" alt=""></a>
             <span class="category">Penthouse</span>
             <h6>$925.600</h6>
-            <h4><a href="property-details.php">34 Hope Street Portland, OR 42680</a></h4>
+            <h4><a href="detail-predstavenia.php">34 Hope Street Portland, OR 42680</a></h4>
             <ul>
               <li>Bedrooms: <span>4</span></li>
               <li>Bathrooms: <span>4</span></li>
@@ -118,16 +118,16 @@ include_once('parts/head.php');
               <li>Parking: <span>2 cars</span></li>
             </ul>
             <div class="main-button">
-              <a href="property-details.php">Schedule a visit</a>
+              <a href="detail-predstavenia.php">Schedule a visit</a>
             </div>
           </div>
         </div>
         <div class="col-lg-4 col-md-6 align-self-center mb-30 properties-items col-md-6 rac adv">
           <div class="item">
-            <a href="property-details.php"><img src="assets/images/property-06.jpg" alt=""></a>
+            <a href="detail-predstavenia.php"><img src="assets/images/property-06.jpg" alt=""></a>
             <span class="category">Modern Condo</span>
             <h6>$450.000</h6>
-            <h4><a href="property-details.php">22 Hope Street Portland, OR 16540</a></h4>
+            <h4><a href="detail-predstavenia.php">22 Hope Street Portland, OR 16540</a></h4>
             <ul>
               <li>Bedrooms: <span>3</span></li>
               <li>Bathrooms: <span>2</span></li>
@@ -136,16 +136,16 @@ include_once('parts/head.php');
               <li>Parking: <span>3 cars</span></li>
             </ul>
             <div class="main-button">
-              <a href="property-details.php">Schedule a visit</a>
+              <a href="detail-predstavenia.php">Schedule a visit</a>
             </div>
           </div>
         </div>
         <div class="col-lg-4 col-md-6 align-self-center mb-30 properties-items col-md-6 rac str">
           <div class="item">
-            <a href="property-details.php"><img src="assets/images/property-03.jpg" alt=""></a>
+            <a href="detail-predstavenia.php"><img src="assets/images/property-03.jpg" alt=""></a>
             <span class="category">Luxury Villa</span>
             <h6>$980.000</h6>
-            <h4><a href="property-details.php">14 Mid Street Miami, OR 36450</a></h4>
+            <h4><a href="detail-predstavenia.php">14 Mid Street Miami, OR 36450</a></h4>
             <ul>
               <li>Bedrooms: <span>8</span></li>
               <li>Bathrooms: <span>8</span></li>
@@ -154,16 +154,16 @@ include_once('parts/head.php');
               <li>Parking: <span>12 spots</span></li>
             </ul>
             <div class="main-button">
-              <a href="property-details.php">Schedule a visit</a>
+              <a href="detail-predstavenia.php">Schedule a visit</a>
             </div>
           </div>
         </div>
         <div class="col-lg-4 col-md-6 align-self-center mb-30 properties-items col-md-6 rac adv">
           <div class="item">
-            <a href="property-details.php"><img src="assets/images/property-02.jpg" alt=""></a>
+            <a href="detail-predstavenia.php"><img src="assets/images/property-02.jpg" alt=""></a>
             <span class="category">Luxury Villa</span>
             <h6>$1.520.000</h6>
-            <h4><a href="property-details.php">26 Old Street Miami, OR 12870</a></h4>
+            <h4><a href="detail-predstavenia.php">26 Old Street Miami, OR 12870</a></h4>
             <ul>
               <li>Bedrooms: <span>12</span></li>
               <li>Bathrooms: <span>15</span></li>
@@ -172,16 +172,16 @@ include_once('parts/head.php');
               <li>Parking: <span>14 spots</span></li>
             </ul>
             <div class="main-button">
-              <a href="property-details.php">Schedule a visit</a>
+              <a href="detail-predstavenia.php">Schedule a visit</a>
             </div>
           </div>
         </div>
         <div class="col-lg-4 col-md-6 align-self-center mb-30 properties-items col-md-6 rac adv">
           <div class="item">
-            <a href="property-details.php"><img src="assets/images/property-01.jpg" alt=""></a>
+            <a href="detail-predstavenia.php"><img src="assets/images/property-01.jpg" alt=""></a>
             <span class="category">Luxury Villa</span>
             <h6>$3.145.000</h6>
-            <h4><a href="property-details.php">34 New Street Miami, OR 24650</a></h4>
+            <h4><a href="detail-predstavenia.php">34 New Street Miami, OR 24650</a></h4>
             <ul>
               <li>Bedrooms: <span>10</span></li>
               <li>Bathrooms: <span>12</span></li>
@@ -190,7 +190,7 @@ include_once('parts/head.php');
               <li>Parking: <span>10 spots</span></li>
             </ul>
             <div class="main-button">
-              <a href="property-details.php">Schedule a visit</a>
+              <a href="detail-predstavenia.php">Schedule a visit</a>
             </div>
           </div>
         </div>

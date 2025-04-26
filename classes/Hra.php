@@ -2,6 +2,7 @@
 
 namespace Classes;
 use PDO;
+use Classes\Database;
 
 class Hra
 {
@@ -10,7 +11,7 @@ class Hra
         $this->conn = $database->getConnection();
     }
 
-    public function create(string $nazov, string $popis, string $zaciatok, string $koniec, int $trvanie, int $vekObmedzenie): bool {
+    public function create(string $nazov, string $popis, string $zaciatok, ?string $koniec, int $trvanie, int $vekObmedzenie): bool {
         $sql = "INSERT INTO predstavenia (nazov, popis, zaciatok_hrania, koniec_hrania, trvanie, vekove_obmedzenie)
                 VALUES (:nazov, :popis, :zaciatok, :koniec,:trvanie, :vek)";
         $stmt = $this->conn->prepare($sql);
@@ -53,5 +54,18 @@ class Hra
         $sql = "DELETE FROM predstavenia WHERE id = :id";
         $stmt = $this->conn->prepare($sql);
         return $stmt->execute(['id' => $id]);
+    }
+
+    public function addImage(int $hraId, string $obrazok): bool {
+        $sql = "INSERT INTO hra_obrazky (hra_id, obrazok) VALUES (:hra_id, :obrazok)";
+        $stmt = $this->conn->prepare($sql);
+        return $stmt->execute([
+            'hra_id' => $hraId,
+            'obrazok' => $obrazok
+        ]);
+    }
+
+    public function getLastInsertedId(): int {
+        return (int) $this->conn->lastInsertId();
     }
 }

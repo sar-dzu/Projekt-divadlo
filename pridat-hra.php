@@ -1,6 +1,8 @@
 <?php
 
-declare(strict_types=1);
+
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
 require_once "db/config.php";
 require_once 'classes/Database.php';
@@ -20,6 +22,11 @@ if (!isset($_SESSION['admin']) || $_SESSION['admin'] !== true) {
 $database = new Database();
 $hra = new Hra($database);
 
+$sql = "SELECT * FROM kategorie";
+$stmt = $database->getConnection()->prepare($sql);
+$stmt->execute();
+$kategorie = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $nazov = $_POST['nazov'];
     $popis = $_POST['popis'];
@@ -33,9 +40,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $success = $hra->create($nazov, $popis, $zaciatok, $koniec, $trvanie, $vek);
             if ($success) {
                 $hra_id=$hra->getLastInsertedId();
-                if(!empty($_FILES['obrazok']['name'])) {
-                    foreach ($_FILES['obrazok']['tmp_name'] as $key => $tmp_name) {
-                        $obrazok_nazov = basename($_FILES['obrazok']['name'][$key]);
+                // spracovanie kategórií
+                if (!empty($_POST['kategorie'])) {
+                    $hra->addCategories($hra_id, $_POST['kategorie']);
+                }
+                // obrázky
+                if(!empty($_FILES['obrazky']['name']) && is_array($_FILES['obrazky']['name'])) {
+                    foreach ($_FILES['obrazky']['tmp_name'] as $key => $tmp_name) {
+                        $obrazok_nazov = basename($_FILES['obrazky']['name'][$key]);
                         $target = "assets/images/" . $obrazok_nazov;
                         if (move_uploaded_file($tmp_name, $target)) {
                             $hra->addImage($hra_id, $obrazok_nazov);
@@ -81,6 +93,18 @@ if (isset($_GET['success']) && $_GET['success'] == 1) {
         <div class="form-group">
             <label for="popis">Popis hry</label>
             <textarea name="popis" id="popis" class="form-control" required></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Kategórie</label><br>
+            <?php foreach ($kategorie as $kategoria): ?>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="kategorie[]" value="<?= htmlspecialchars($kategoria['id']) ?>" id="kategoria<?= $kategoria['id'] ?>">
+                    <label class="form-check-label" for="kategoria<?= $kategoria['id'] ?>">
+                        <?= htmlspecialchars($kategoria['nazov']) ?>
+                    </label>
+                </div>
+            <?php endforeach; ?>
         </div>
 
         <div class="form-group">

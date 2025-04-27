@@ -7,6 +7,7 @@ use Classes\Database;
 class Hra
 {
     private PDO $conn;
+    private int $lastInsertedId;
     public function __construct(Database $database){
         $this->conn = $database->getConnection();
     }
@@ -15,7 +16,7 @@ class Hra
         $sql = "INSERT INTO predstavenia (nazov, popis, zaciatok_hrania, koniec_hrania, trvanie, vekove_obmedzenie)
                 VALUES (:nazov, :popis, :zaciatok, :koniec,:trvanie, :vek)";
         $stmt = $this->conn->prepare($sql);
-        return $stmt->execute([
+        $result = $stmt->execute([
             'nazov' => $nazov,
             'popis' => $popis,
             'zaciatok' => $zaciatok,
@@ -23,6 +24,11 @@ class Hra
             'trvanie' => $trvanie,
             'vek' => $vekObmedzenie
         ]);
+        if ($result) {
+            $this->lastInsertedId = (int) $this->conn->lastInsertId();
+        }
+
+        return $result;
     }
 
     public function getAll(): array{
@@ -66,6 +72,18 @@ class Hra
     }
 
     public function getLastInsertedId(): int {
-        return (int) $this->conn->lastInsertId();
+        return $this->lastInsertedId;
+    }
+
+    public function addCategories(int $hraId, array $kategorie): bool {
+        $sql = "INSERT INTO predstavenie_kategoria (predstavenie_id, kategoria_id) VALUES (:hraId, :kategoriaId)";
+        $stmt = $this->conn->prepare($sql);
+        foreach ($kategorie as $kategoriaId) {
+            $stmt->execute([
+                'hraId' => $hraId,
+                'kategoriaId' => $kategoriaId
+            ]);
+        }
+        return true;
     }
 }

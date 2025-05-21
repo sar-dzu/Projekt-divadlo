@@ -36,6 +36,9 @@ if (!$hraData) {
     echo "Hra neexistuje.";
     exit();
 }
+$stmt = $database->getConnection()->prepare("SELECT id, obrazok FROM hra_obrazky WHERE hra_id = :id");
+$stmt->execute(['id' => $id]);
+$obrazky = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // priradene kategorie
 $stmt = $database->getConnection()->prepare("SELECT kategoria_id FROM predstavenie_kategoria WHERE predstavenie_id = :id");
@@ -56,6 +59,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             // Predpokladám, že máte metódu na aktualizáciu údajov v Hra triede
             $success = $hra->update($id, $nazov, $popis, $zaciatok, $koniec, $trvanie, $vek);
             if ($success) {
+                if (!empty($_POST['delete_images'])) {
+                    foreach ($_POST['delete_images'] as $obrazokId) {
+                        // Získaj názov obrázka
+                        $stmt = $database->getConnection()->prepare("SELECT obrazok FROM hra_obrazky WHERE id = :id AND hra_id = :hra_id");
+                        $stmt->execute(['id' => $obrazokId, 'hra_id' => $id]);
+                        $obrazok = $stmt->fetch(PDO::FETCH_ASSOC);
+                        if ($obrazok) {
+                            $filePath = "assets/images/" . $obrazok['obrazok'];
+                            if (file_exists($filePath)) {
+                                unlink($filePath); // Odstráni súbor
+                            }
+                            $deleteStmt = $database->getConnection()->prepare("DELETE FROM hra_obrazky WHERE id = :id");
+                            $deleteStmt->execute(['id' => $obrazokId]);
+                        }
+                    }
+                }
                 // Úspešná aktualizácia
                 if (!empty($_POST['kategorie'])) {
                     $hra->updateCategories($id, $_POST['kategorie']);
@@ -73,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 }
 
                 $msg = "Predstavenie bolo úspešne upravené.";
-                header("Location: upravit-hra.php?id=$id&success=1");
+                header("Location: zobrazit-hry.php?updated=1");
                 exit();
             } else {
                 $error = "Nepodarilo sa upravit predstavenie.";
@@ -138,7 +157,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <label for="trvanie">Dĺžka predstavenia</label>
                 <input type="number" name="trvanie" id="trvanie" class="form-control" required value="<?= htmlspecialchars($hraData['trvanie']) ?>">
             </div>
-
+            <?php if (!empty($obrazky)): ?>
+                <div class="form-group">
+                    <label>Existujúce obrázky</label>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <?php foreach ($obrazky as $obrazok): ?>
+                            <div style="position: relative;">
+                                <img src="assets/images/<?= htmlspecialchars($obrazok['obrazok']) ?>" style="width: 150px; height: auto; object-fit: cover;">
+                                <label style="position: absolute; top: 5px; right: 5px; background: red; color: white; padding: 2px 6px; cursor: pointer;">
+                                    <input type="checkbox" name="delete_images[]" value="<?= $obrazok['id'] ?>" style="display: none;">
+                                    X
+                                </label>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            <?php endif; ?>
+            <div>
+                <label for="obrazky">Vyberte obrázky:</label>
+                <input type="file" name="obrazky[]" multiple>
+            </div>
             <div class="form-group">
                 <label for="vek">Vekové obmedzenie</label>
                 <input type="number" name="vek" id="vek" class="form-control" required value="<?= htmlspecialchars($hraData['vekove_obmedzenie']) ?>">

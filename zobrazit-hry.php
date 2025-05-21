@@ -17,30 +17,40 @@ if (!isset($_SESSION['admin']) || $_SESSION['admin'] !== true) {
 }
 
 $database = new Database();
-$hra = new Hra($database);
-$hry = $hra->getAllOrderedByDateLogic();
-$kategorie = $hra->getAllCategories();
+$hraObj = new Hra($database);
+$kategoria = $_GET['kategoria'] ?? null;
+
+if ($kategoria) {
+    $hry = $hraObj->getByCategory($kategoria);
+} else {
+    $hry = $hraObj->getAllOrderedByDateLogic();
+}
+$kategorie = $hraObj->getAllCategories();
 ?>
 
 <?php require_once 'parts/head.php'?>
-<ul class="properties-filter">
-    <li>
-        <a class="is_active" href="#!" data-filter="*">Zobraziť všetky</a>
-    </li>
-    <?php if (!empty($kategorie)): ?>
-        <?php foreach ($kategorie as $kat): ?>
-            <?php if (!empty($kat)): ?>
-                <li>
-                    <a href="#!" data-filter=".<?= strtolower(preg_replace('/\s+/', '-', $kat)) ?>">
-                        <?= htmlspecialchars($kat ?? 'N/A', ENT_QUOTES, 'UTF-8') ?>
-                    </a>
-                </li>
-            <?php endif; ?>
+<div class="properties">
+    <ul class="properties-filter">
+        <li>
+            <a class="<?= !isset($_GET['kategoria']) ? 'is_active' : '' ?>" href="zobrazit-hry.php">Zobraziť všetky</a>
+        </li>
+        <?php foreach ($kategorie as $kat):
+            $nazov = $kat['nazov'];
+            ?>
+            <li>
+                <a class="<?= (isset($_GET['kategoria']) && $_GET['kategoria'] === $nazov) ? 'is_active' : '' ?>"
+                   href="zobrazit-hry.php?kategoria=<?= urlencode($nazov) ?>">
+                    <?= htmlspecialchars($nazov, ENT_QUOTES, 'UTF-8') ?>
+                </a>
+            </li>
         <?php endforeach; ?>
-    <?php endif; ?>
-</ul>
+    </ul>
+</div>
 <div class="container">
-    <h1>Repertoár divadla</h1>
+    <h1 style="margin-bottom: 2rem;">Repertoár divadla</h1>
+    <?php if (isset($_GET['kategoria']) && !empty($_GET['kategoria'])): ?>
+        <h4 style="margin-bottom: 1rem;">Filtrované podľa: <?= htmlspecialchars($_GET['kategoria'], ENT_QUOTES, 'UTF-8') ?></h4>
+    <?php endif; ?>
     <div class="hry-grid">
         <?php foreach ($hry as $hra): ?>
             <?php
@@ -55,14 +65,17 @@ $kategorie = $hra->getAllCategories();
             ?>
 
             <div class="hra-box <?= $katClasses ?>">
+                <div class="hra-nazov">
+                    <h2><?= htmlspecialchars($hra['nazov'] ?? 'Neznámy názov', ENT_QUOTES, 'UTF-8') ?></h2>
+                </div>
                 <?php if (!empty($hra['hlavny_obrazok'])): ?>
-                    <img src="../assets/images/<?= htmlspecialchars($hra['hlavny_obrazok'] ?? '', ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars($hra['nazov'] ?? 'Neznámy názov', ENT_QUOTES, 'UTF-8') ?>">
+                    <img src="assets/images/<?= htmlspecialchars($hra['hlavny_obrazok'] ?? '', ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars($hra['nazov'] ?? 'Neznámy názov', ENT_QUOTES, 'UTF-8') ?>"
+                         style="display: block; margin: 10px 0; max-width: 200px; height: auto;">
                 <?php else: ?>
-                    <img src="../images/featured.jpg" alt="Bez obrázku">
+                    <img src="assets/images/featured.jpg" alt="Bez obrázku" style="display: block; margin: 10px 0; max-width: 200px; height: auto;">
                 <?php endif; ?>
 
-                <div class="hra-info">
-                    <h2><?= htmlspecialchars($hra['nazov'] ?? 'Neznámy názov', ENT_QUOTES, 'UTF-8') ?></h2>
+                <div class="hra-info" style="margin-bottom: 3rem">
                     <p><?= htmlspecialchars($hra['popis'] ?? 'Žiadny popis k dispozícii.', ENT_QUOTES, 'UTF-8') ?></p>
                     <p><strong>Kategórie:</strong> <?= !empty($hra['kategorie']) ? htmlspecialchars($hra['kategorie'], ENT_QUOTES, 'UTF-8') : 'N/A' ?></p>
 
@@ -78,7 +91,7 @@ $kategorie = $hra->getAllCategories();
 
                     <a href="hra-detail.php?id=<?= $hra['id'] ?>" class="btn">Zobraziť</a>
                     <a href="upravit-hra.php?id=<?= $hra['id'] ?>" class="btn btn-edit">Upraviť</a>
-                    <button class="btn btn-delete" onclick="confirmDelete(<?= $hra['id'] ?>)">Vymazať</button>
+                    <a href="vymazat-hra.php?id=<?= $hra['id'] ?>" class="btn btn-delete" onclick="return confirm('Naozaj chceš vymazať toto predstavenie?')">Vymazať</a>
                 </div>
             </div>
 

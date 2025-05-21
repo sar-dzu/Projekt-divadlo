@@ -84,7 +84,7 @@ class Hra
         // Najprv vymazať staré kategórie
         $sql = "DELETE FROM predstavenie_kategoria WHERE predstavenie_id = :id";
         $stmt = $this->conn->prepare($sql);
-        $stmt->execute([':hra_id' => $id]);
+        $stmt->execute([':id' => $id]);
 
         // Potom pridať nové kategórie
         foreach ($categories as $category_id) {
@@ -100,21 +100,27 @@ class Hra
     public function getAllOrderedByDateLogic(): array {
         $sql = "
         SELECT 
-    p.id, 
-    p.nazov, 
-    p.popis, 
-    p.zaciatok_hrania, 
-    p.koniec_hrania, 
-    p.trvanie, 
-    p.vekove_obmedzenie, 
-    (SELECT obrazok FROM hra_obrazky WHERE hra_id = p.id LIMIT 1) AS hlavny_obrazok,
-    NULL AS triedenie
-FROM predstavenia p
-ORDER BY 
-    CASE 
-        WHEN p.koniec_hrania IS NOT NULL THEN p.koniec_hrania
-        ELSE p.zaciatok_hrania
-    END DESC
+            p.id, 
+            p.nazov, 
+            p.popis, 
+            p.zaciatok_hrania, 
+            p.koniec_hrania, 
+            p.trvanie, 
+            p.vekove_obmedzenie, 
+            (SELECT obrazok FROM hra_obrazky WHERE hra_id = p.id LIMIT 1) AS hlavny_obrazok,
+            (
+                SELECT GROUP_CONCAT(k.nazov SEPARATOR ', ')
+                FROM predstavenie_kategoria pk
+                JOIN kategorie k ON pk.kategoria_id = k.id
+                WHERE pk.predstavenie_id = p.id
+            ) AS kategorie,
+            NULL AS triedenie
+        FROM predstavenia p
+        ORDER BY 
+            CASE 
+                WHEN p.koniec_hrania IS NOT NULL THEN p.koniec_hrania
+                ELSE p.zaciatok_hrania
+            END DESC
     ";
 
         $stmt = $this->conn->prepare($sql);
@@ -122,10 +128,27 @@ ORDER BY
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+
     public function getAllCategories() {
         $sql = "SELECT id, nazov FROM kategorie ORDER BY nazov";
         $stmt = $this->conn->prepare($sql);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function getByCategory($nazovKategorie)
+    {
+        $sql = "
+        SELECT h.*
+        FROM predstavenia h
+        JOIN predstavenie_kategoria pk ON h.id = pk.predstavenie_id
+        JOIN kategorie k ON k.id = pk.kategoria_id
+        WHERE k.nazov = :nazov
+        ORDER BY h.zaciatok_hrania ASC
+    ";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([':nazov' => $nazovKategorie]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
 }

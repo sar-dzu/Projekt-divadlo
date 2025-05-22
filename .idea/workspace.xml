@@ -5,11 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c2301c2e-4ca6-49ef-956b-8bcdf0ef8a4e" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/pridat-reprizu.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vymazat-reprizu.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/classes/Hra.php" beforeDir="false" afterPath="$PROJECT_DIR$/classes/Hra.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/zobrazit-hry.php" beforeDir="false" afterPath="$PROJECT_DIR$/zobrazit-hry.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/images/featured.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/assets/images/featured.jpg" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -73,7 +69,7 @@
       <workItem from="1746711313072" duration="8513000" />
       <workItem from="1747816492242" duration="2226000" />
       <workItem from="1747827971734" duration="4672000" />
-      <workItem from="1747914131391" duration="2046000" />
+      <workItem from="1747914131391" duration="3075000" />
     </task>
     <servers />
   </component>

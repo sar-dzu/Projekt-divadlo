@@ -62,6 +62,7 @@ $kategorie = $hraObj->getAllCategories();
                     return strtolower(preg_replace('/\s+/', '-', $k));
                 }, $katArray));
             }
+            $reprizy = $hraObj->getReprizy($hra['id']);
             ?>
 
             <div class="hra-box <?= $katClasses ?>">
@@ -75,7 +76,7 @@ $kategorie = $hraObj->getAllCategories();
                     <img src="assets/images/featured.jpg" alt="Bez obrázku" style="display: block; margin: 10px 0; max-width: 200px; height: auto;">
                 <?php endif; ?>
 
-                <div class="hra-info" style="margin-bottom: 3rem">
+                <div class="hra-info">
                     <p><?= htmlspecialchars($hra['popis'] ?? 'Žiadny popis k dispozícii.', ENT_QUOTES, 'UTF-8') ?></p>
                     <p><strong>Kategórie:</strong> <?= !empty($hra['kategorie']) ? htmlspecialchars($hra['kategorie'], ENT_QUOTES, 'UTF-8') : 'N/A' ?></p>
 
@@ -85,13 +86,36 @@ $kategorie = $hraObj->getAllCategories();
                         <?php elseif (!empty($hra['triedenie'])): ?>
                             <strong>Najbližšie:</strong> <?= date('d.m.Y', strtotime($hra['triedenie'])) ?>
                         <?php else: ?>
-                            <em>Zatiaľ bez termínu</em>
+                            <em>Nemá dátum derniéry</em>
                         <?php endif; ?>
                     </p>
 
-                    <a href="hra-detail.php?id=<?= $hra['id'] ?>" class="btn">Zobraziť</a>
-                    <a href="upravit-hra.php?id=<?= $hra['id'] ?>" class="btn btn-edit">Upraviť</a>
-                    <a href="vymazat-hra.php?id=<?= $hra['id'] ?>" class="btn btn-delete" onclick="return confirm('Naozaj chceš vymazať toto predstavenie?')">Vymazať</a>
+                    <a href="upravit-hra.php?id=<?= $hra['id'] ?>" class="btn btn-secondary">Upraviť</a>
+                    <a href="vymazat-hra.php?id=<?= $hra['id'] ?>" class="btn btn-danger" onclick="return confirm('Naozaj chceš vymazať toto predstavenie?')">Vymazať</a>
+                </div>
+                <div style="margin-bottom: 2rem;">
+                    <?php if (!empty($reprizy)): ?>
+                        <div class="reprizy">
+                            <strong>Nadchádzajúce reprízy:</strong>
+                            <ul>
+                                <?php foreach ($reprizy as $r): ?>
+                                    <li style="margin: 0.3rem 0;">
+                                        <?= date('d.m.Y H:i', strtotime($r['datum_cas'])) ?>
+                                        <a href="vymazat-reprizu.php?id=<?= $r['id'] ?>" onclick="return confirm('Naozaj chceš vymazať túto reprízu?')" style="color: red; margin-left: 10px;">&times;</a>
+                                    </li>
+                                <?php endforeach; ?>
+                            </ul>
+                        </div>
+                    <?php endif; ?>
+                    <?php
+                    $koniec = $hra['koniec_hrania'] ?? null;
+                    $mozePridat = empty($koniec) || strtotime($koniec) > time();
+                    ?>
+
+                    <?php if ($mozePridat): ?>
+                        <a href="pridat-reprizu.php?predstavenie_id=<?= $hra['id'] ?>" class="btn btn-dark">Pridať reprízu</a>
+                    <?php endif; ?>
+
                 </div>
             </div>
 

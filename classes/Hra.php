@@ -150,5 +150,12 @@ class Hra
         $stmt->execute([':nazov' => $nazovKategorie]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    public function getReprizy($predstavenieId)
+    {
+        $sql = "SELECT * FROM reprizy WHERE predstavenie_id = :id AND datum_cas >= NOW() ORDER BY datum_cas ASC";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute(['id' => $predstavenieId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 
 }

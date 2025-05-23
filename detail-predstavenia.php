@@ -1,21 +1,43 @@
 <?php
 include_once('parts/head.php');
+
+require_once 'db/config.php';
+require_once 'classes/Database.php';
+require_once 'classes/Hra.php';
+
+use Classes\Database;
+use Classes\Hra;
+
+$db = new Database();
+$hra = new Hra($db);
+
+// Získaj ID z URL
+$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+
+// Získaj údaje o predstavení podľa ID
+$predstavenie = $hra->getHraById($id); // túto funkciu musíš mať alebo doplniť v triede Hra
+
+if (!$predstavenie) {
+    // ak sa nenašlo, presmeruj alebo zobraz chybu
+    die('Predstavenie nebolo nájdené.');
+}
 ?>
 
   <!-- ***** Header Area End ***** -->
 
-  <div class="page-heading header-text">
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-12">
-          <span class="breadcrumb"><a href="index.php">Home</a>  /  Single Property</span>
-          <h3>Single Property</h3>
+    <div class="page-heading header-text">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <span class="breadcrumb"><a href="index.php">Home</a>  /  <?php echo htmlspecialchars($predstavenie['nazov']); ?></span>
+                    <h3><?php echo htmlspecialchars($predstavenie['nazov']); ?></h3>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
 
-  <div class="single-property section">
+
+<div class="single-property section">
     <div class="container">
       <div class="row">
         <div class="col-lg-8">

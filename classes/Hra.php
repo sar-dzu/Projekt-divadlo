@@ -157,5 +157,41 @@ class Hra
         $stmt->execute(['id' => $predstavenieId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    public function getUpcomingUniqueReprizy($limit = 5)
+    {
+        $sql = "
+        SELECT 
+            r.predstavenie_id, 
+            MIN(r.datum_cas) AS najblizsia_repriza, 
+            p.nazov, 
+            (
+                SELECT ho.obrazok 
+                FROM hra_obrazky ho 
+                WHERE ho.hra_id = p.id 
+                ORDER BY ho.id ASC 
+                LIMIT 1
+            ) AS obrazok
+        FROM reprizy r
+        JOIN predstavenia p ON r.predstavenie_id = p.id
+        WHERE r.datum_cas >= NOW()
+        GROUP BY r.predstavenie_id
+        ORDER BY najblizsia_repriza ASC
+        LIMIT :limit
+    ";
+
+        $stmt = $this->conn->prepare($sql); // použiješ PDO spojenie z konštruktora
+        $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    public function getHraById($id)
+    {
+        $sql = "SELECT * FROM predstavenia WHERE id = :id";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
 
 }

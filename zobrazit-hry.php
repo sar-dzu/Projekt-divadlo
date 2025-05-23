@@ -73,7 +73,7 @@ $kategorie = $hraObj->getAllCategories();
                     <img src="assets/images/<?= htmlspecialchars($hra['hlavny_obrazok'] ?? '', ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars($hra['nazov'] ?? 'Neznámy názov', ENT_QUOTES, 'UTF-8') ?>"
                          style="display: block; margin: 10px 0; max-width: 200px; height: auto;">
                 <?php else: ?>
-                    <img src="assets/images/featured.jpg" alt="Bez obrázku" style="display: block; margin: 10px 0; max-width: 200px; height: auto;">
+                    <img src="assets/images/featured1.jpg" alt="Bez obrázku" style="display: block; margin: 10px 0; max-width: 200px; height: auto;">
                 <?php endif; ?>
 
                 <div class="hra-info">

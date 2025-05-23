@@ -730,36 +730,26 @@ Header Style
   
 }
 
+
 /* 
 ---------------------------------------------
 Banner Style
 --------------------------------------------- 
 */
 
+
 .main-banner .item {
   background-position: center center;
   background-repeat: no-repeat;
   background-size: cover;
-  padding: 220px 20% 320px 20%;
-  margin-top: 0px;
+  margin: 1rem;
 }
 
-.main-banner .item-1 {
-  background-image: url(../images/banner-01.jpg);
-}
-
-.main-banner .item-2 {
-  background-image: url(../images/banner-02.jpg);
-}
-
-.main-banner .item-3 {
-  background-image: url(../images/banner-03.jpg);
-}
 
 .main-banner .item span.category {
-  background-color: #fff;
+  background-color: #2c0b0e;
   color: #1e1e1e;
-  font-size: 16px;
+  font-size: 20px;
   font-weight: 500;
   text-transform: capitalize;
   padding: 6px 15px;
@@ -776,7 +766,7 @@ Banner Style
   font-size: 62px;
   font-weight: 700;
   text-transform: uppercase;
-  color: #fff;
+  color: #2c0b0e;
   line-height: 72px;
   width: 50%;
   margin-bottom: 0px;
@@ -791,7 +781,7 @@ Banner Style
 .main-banner .owl-dots .owl-dot {
   width: 10px;
   height: 10px;
-  background-color: #fff;
+  background-color: #7a7a7a;
   border-radius: 50%;
   margin-right: 10px;
   transition: all .5s;
@@ -815,7 +805,7 @@ Banner Style
   line-height: 50px;
   font-size: 24px;
   display: inline-block;
-  color: #fff;
+  color: #2c0b0e;
   background-color: rgba(255, 255, 255, 0.2);
   border-radius: 50%;
   opacity: 1;

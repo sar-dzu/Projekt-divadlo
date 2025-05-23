@@ -45,8 +45,14 @@ $kategorie = $hraObj->getAllCategories();
             </li>
         <?php endforeach; ?>
     </ul>
+
 </div>
 <div class="container">
+    <div style="margin: 1rem 0;">
+        <a href="pridat-hra.php" class="btn btn-primary" style="background-color: #6c4a4a; border: none; padding: 10px 20px; border-radius: 6px; color: white; text-decoration: none;">
+            + Pridať inscenáciu
+        </a>
+    </div>
     <h1 style="margin-bottom: 2rem;">Repertoár divadla</h1>
     <?php if (isset($_GET['kategoria']) && !empty($_GET['kategoria'])): ?>
         <h4 style="margin-bottom: 1rem;">Filtrované podľa: <?= htmlspecialchars($_GET['kategoria'], ENT_QUOTES, 'UTF-8') ?></h4>

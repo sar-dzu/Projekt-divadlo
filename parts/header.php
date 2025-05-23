@@ -11,7 +11,7 @@ $menu = getMenuData("header");
                 <nav class="main-nav">
                     <!-- ***** Logo Start ***** -->
                     <a href="<?php echo $menu['home']['path']?>">
-                        <img alt="img" src="assets/images/dsdk_logo.png" height="80">
+                        <img alt="img" src="assets/images/dsdk_logo.png" style="margin: 10px; max-height: 60px;width: auto;">
                     </a>
                     <!-- ***** Logo End ***** -->
                     <!-- ***** Menu Start ***** -->

@@ -36,7 +36,7 @@ if (empty($obrazky)) {
 $message = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['repriza_id'])) {
     $reprizaId = (int)$_POST['repriza_id'];
-    if ($hra->kupitListok($reprizaId)) {
+    if ($hra->buyTicket($reprizaId)) {
         $message = "Lístok bol úspešne zakúpený.";
         // Obnovíme reprízy, aby sa aktualizovala kapacita
         $reprizy = $hra->getReprizy($id);

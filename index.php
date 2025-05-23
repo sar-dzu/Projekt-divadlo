@@ -1,37 +1,57 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', '1');
+
 include_once('parts/head.php');
+
+require_once 'db/config.php';
+require_once 'classes/Database.php';
+require_once 'classes/Hra.php';
+
+use Classes\Database;
+use Classes\Hra;
+
+$db = new Database();
+$hra = new Hra($db);
+$reprizy = $hra->getUpcomingUniqueReprizy();
 ?>
   <!-- ***** Header Area End ***** -->
 
-  <div class="main-banner">
+<div class="main-banner" style="margin-top: -200px;">
     <div class="owl-carousel owl-banner">
-      <div class="item item-1">
-        <div class="header-text">
-          <span class="category">Toronto, <em>Canada</em></span>
-          <h2>Hurry!<br>Get the Best Villa for you</h2>
-        </div>
-      </div>
-      <div class="item item-2">
-        <div class="header-text">
-          <span class="category">Melbourne, <em>Australia</em></span>
-          <h2>Be Quick!<br>Get the best villa in town</h2>
-        </div>
-      </div>
-      <div class="item item-3">
-        <div class="header-text">
-          <span class="category">Miami, <em>South Florida</em></span>
-          <h2>Act Now!<br>Get the highest level penthouse</h2>
-        </div>
-      </div>
+        <?php foreach ($reprizy as $index => $repriza): ?>
+            <div class="item" style="margin-bottom: -200px;">
+                <div class="header-text">
+                  <span class="category">
+                    <em><?php echo date('d.m.Y H:i', strtotime($repriza['najblizsia_repriza'])); ?></em>
+                  </span>
+                    <h3>Príďte sa pozrieť!</h3>
+                    <h2 style="color: #2c0b0e;">
+                        <a href="detail-predstavenia.php?id=<?php echo urlencode($repriza['predstavenie_id']); ?>" style="color: inherit; text-decoration: none;">
+                            <?php echo htmlspecialchars($repriza['nazov']); ?>
+                        </a>
+                    </h2>
+                </div>
+                <a href="detail-predstavenia.php?id=<?php echo urlencode($repriza['predstavenie_id']); ?>">
+                    <?php if (!empty($repriza['obrazok'])): ?>
+                        <img src="assets/images/<?php echo htmlspecialchars($repriza['obrazok']); ?>" alt="<?php echo htmlspecialchars($repriza['nazov']); ?>"
+                             style="max-height: 600px; width: auto;">
+                    <?php else: ?>
+                        <img src="assets/images/featured1.jpg" alt="Bez obrázku" style="max-height: 600px; width: auto;">
+                    <?php endif; ?>
+                </a>
+            </div>
+        <?php endforeach; ?>
     </div>
-  </div>
+</div>
+
 
   <div class="featured section">
     <div class="container">
       <div class="row">
         <div class="col-lg-4">
           <div class="left-image">
-            <img src="assets/images/featured.jpg" alt="">
+            <img src="assets/images/featured1.jpg" alt="">
             <a href="detail-predstavenia.php"><img src="assets/images/featured-icon.png" alt="" style="max-width: 60px; padding: 0px;"></a>
           </div>
         </div>

@@ -8,20 +8,27 @@ require_once 'classes/Database.php';
 $database = new \Classes\Database();
 $conn = $database->getConnection();
 
+$error = '';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id = $_POST['predstavenie_id'];
     $datetime = $_POST['datum_cas'];
+    $kapacita = $_POST['kapacita'];
 
     $zvolenyCas = strtotime($datetime);
     $teraz = time();
 
-    if ($zvolenyCas === false || $zvolenyCas < $teraz) {
+    // Validacia kapacity
+    if (!filter_var($kapacita, FILTER_VALIDATE_INT, ["options" => ["min_range" => 0]])) {
+        $error = "Kapacita musí byť celé kladné číslo.";
+    } elseif ($zvolenyCas === false || $zvolenyCas < $teraz) {
         $error = "Zvolený dátum a čas musí byť v budúcnosti.";
     } else {
-        $stmt = $conn->prepare("INSERT INTO reprizy (predstavenie_id, datum_cas) VALUES (:id, :cas)");
+        $stmt = $conn->prepare("INSERT INTO reprizy (predstavenie_id, datum_cas, kapacita) VALUES (:id, :cas, :kapacita)");
         $stmt->execute([
             'id' => $id,
-            'cas' => $datetime
+            'cas' => $datetime,
+            'kapacita' => $kapacita
         ]);
         header('Location: zobrazit-hry.php');
         exit();
@@ -46,9 +53,14 @@ if ($predstavenie_id) {
     <h1 style="margin-bottom: 2rem;">Pridať reprízu pre: <?= htmlspecialchars($nazov) ?></h1>
     <form method="POST">
         <input type="hidden" name="predstavenie_id" value="<?= htmlspecialchars($predstavenie_id) ?>">
+
         <label for="datum_cas">Dátum a čas reprízy:</label>
         <input type="datetime-local" name="datum_cas" required>
-        <button type="submit">Pridať reprízu</button>
+
+        <label for="kapacita" style="margin-top: 1rem;">Kapacita (počet miest):</label>
+        <input type="number" name="kapacita" min="0" required>
+
+        <button type="submit" style="margin-top: 1rem;">Pridať reprízu</button>
     </form>
 </div>
 <?php if (!empty($error)): ?>

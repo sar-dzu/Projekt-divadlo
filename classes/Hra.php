@@ -186,12 +186,55 @@ class Hra
     }
     public function getHraById($id)
     {
-        $sql = "SELECT * FROM predstavenia WHERE id = :id";
+        $sql = "
+        SELECT 
+            p.*, 
+            (
+                SELECT obrazok 
+                FROM hra_obrazky 
+                WHERE hra_id = p.id 
+                ORDER BY id ASC 
+                LIMIT 1
+            ) AS hlavny_obrazok,
+            (
+                SELECT GROUP_CONCAT(k.nazov SEPARATOR ', ')
+                FROM predstavenie_kategoria pk
+                JOIN kategorie k ON pk.kategoria_id = k.id
+                WHERE pk.predstavenie_id = p.id
+            ) AS kategorie
+        FROM predstavenia p
+        WHERE p.id = :id
+    ";
         $stmt = $this->conn->prepare($sql);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+    public function getObrazkyByHraId($hraId) {
+        $sql = "SELECT obrazok FROM hra_obrazky WHERE hra_id = :id ORDER BY id ASC";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute(['id' => $hraId]);
+        return $stmt->fetchAll(PDO::FETCH_COLUMN);
+    }
+    public function kupitListok($reprizaId): bool {
+        // Najprv získať kapacitu
+        $sql = "SELECT kapacita FROM reprizy WHERE id = :id";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute(['id' => $reprizaId]);
+        $repriza = $stmt->fetch(PDO::FETCH_ASSOC);
 
+        if (!$repriza) {
+            return false; // repríza neexistuje
+        }
+
+        if ($repriza['kapacita'] <= 0) {
+            return false; // kapacita vyčerpaná
+        }
+
+        // Znížiť kapacitu o 1
+        $sql = "UPDATE reprizy SET kapacita = kapacita - 1 WHERE id = :id";
+        $stmt = $this->conn->prepare($sql);
+        return $stmt->execute(['id' => $reprizaId]);
+    }
 
 }

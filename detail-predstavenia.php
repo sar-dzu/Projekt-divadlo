@@ -4,23 +4,47 @@ include_once('parts/head.php');
 require_once 'db/config.php';
 require_once 'classes/Database.php';
 require_once 'classes/Hra.php';
+require_once 'classes/Faq.php';
 
+use Classes\Faq;
 use Classes\Database;
 use Classes\Hra;
 
 $db = new Database();
 $hra = new Hra($db);
 
+
+$faq = new Faq($db);
+$questions = $faq->getAll();
+
+
 // Získaj ID z URL
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
 // Získaj údaje o predstavení podľa ID
-$predstavenie = $hra->getHraById($id); // túto funkciu musíš mať alebo doplniť v triede Hra
-
+$predstavenie = $hra->getHraById($id);
+$reprizy = $hra->getReprizy($id);
 if (!$predstavenie) {
-    // ak sa nenašlo, presmeruj alebo zobraz chybu
     die('Predstavenie nebolo nájdené.');
 }
+
+$obrazky = $hra->getObrazkyByHraId($id);
+if (empty($obrazky)) {
+    $obrazky = ['featured1.jpg']; // fallback, ak nemá obrázky
+}
+
+$message = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['repriza_id'])) {
+    $reprizaId = (int)$_POST['repriza_id'];
+    if ($hra->kupitListok($reprizaId)) {
+        $message = "Lístok bol úspešne zakúpený.";
+        // Obnovíme reprízy, aby sa aktualizovala kapacita
+        $reprizy = $hra->getReprizy($id);
+    } else {
+        $message = "Lístok sa nepodarilo zakúpiť (možno už nie sú voľné miesta).";
+    }
+}
+
 ?>
 
   <!-- ***** Header Area End ***** -->
@@ -39,78 +63,120 @@ if (!$predstavenie) {
 
 <div class="single-property section">
     <div class="container">
-      <div class="row">
-        <div class="col-lg-8">
-          <div class="main-image">
-            <img src="assets/images/single-property.jpg" alt="">
-          </div>
-          <div class="main-content">
-            <span class="category">Apparment</span>
-            <h4>24 New Street Miami, OR 24560</h4>
-            <p>Get <strong>the best villa agency</strong> HTML CSS Bootstrap Template for your company website. TemplateMo provides you the <a href="https://www.google.com/search?q=best+free+css+templates" target="_blank">best free CSS templates</a> in the world. Please tell your friends about it. Thank you. Cloud bread kogi bitters pitchfork shoreditch tumblr yr succulents single-origin coffee schlitz enamel pin you probably haven't heard of them ugh hella.
-            
-            <br><br>When you look for free CSS templates, you can simply type TemplateMo in any search engine website. In addition, you can type TemplateMo Digital Marketing, TemplateMo Corporate Layouts, etc. Master cleanse +1 intelligentsia swag post-ironic, slow-carb chambray knausgaard PBR&B DSA poutine neutra cardigan hoodie pop-up.</p>
-          </div> 
-          <div class="accordion" id="accordionExample">
-            <div class="accordion-item">
-              <h2 class="accordion-header" id="headingOne">
-                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                  Best useful links ?
-                </button>
-              </h2>
-              <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
-                <div class="accordion-body">
-                  Dolor <strong>almesit amet</strong>, consectetur adipiscing elit, sed doesn't eiusmod tempor kinfolk tonx seitan crucifix 3 wolf moon bicycle rights keffiyeh snackwave wolf same vice, chillwave vexillologist incididunt ut labore consectetur <code>adipiscing</code> elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="main-image" style="position: relative; max-height: 550px; width: auto;">
+                    <button id="prevBtn" style="position: absolute; top: 50%; left: 10px; z-index: 10;">&#10094;</button>
+                    <img id="carouselImage" src="assets/images/<?php echo htmlspecialchars($obrazky[0]); ?>" alt="" style="max-height: 550px; width: auto; display: block; margin: 0 auto;">
+                    <button id="nextBtn" style="position: absolute; top: 50%; right: 10px; z-index: 10;">&#10095;</button>
                 </div>
-              </div>
-            </div>
-            <div class="accordion-item">
-              <h2 class="accordion-header" id="headingTwo">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                  How does this work ?
-                </button>
-              </h2>
-              <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
-                <div class="accordion-body">
-                  Dolor <strong>almesit amet</strong>, consectetur adipiscing elit, sed doesn't eiusmod tempor kinfolk tonx seitan crucifix 3 wolf moon bicycle rights keffiyeh snackwave wolf same vice, chillwave vexillologist incididunt ut labore consectetur <code>adipiscing</code> elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+
+                <script>
+                    const images = <?php echo json_encode($obrazky); ?>;
+                    let currentIndex = 0;
+
+                    const imgElement = document.getElementById('carouselImage');
+                    const prevBtn = document.getElementById('prevBtn');
+                    const nextBtn = document.getElementById('nextBtn');
+
+                    prevBtn.addEventListener('click', () => {
+                        currentIndex = (currentIndex - 1 + images.length) % images.length;
+                        imgElement.src = "assets/images/" + images[currentIndex];
+                    });
+
+                    nextBtn.addEventListener('click', () => {
+                        currentIndex = (currentIndex + 1) % images.length;
+                        imgElement.src = "assets/images/" + images[currentIndex];
+                    });
+                </script>
+
+                <div class="main-content">
+                    <?php if ($message): ?>
+                        <div style="background-color: #d4edda; color: #155724; padding: 10px; margin-bottom: 1rem; border-radius: 5px;">
+                            <?= htmlspecialchars($message) ?>
+                        </div>
+                    <?php endif; ?>
+
+                    <span class="category"><?php echo htmlspecialchars($predstavenie['kategorie']); ?></span>
+
+                    <h4>
+                        <?php if (!empty($reprizy)): ?>
+                            Nadchádzajúce predstavenia:
+                            <ul>
+                                <?php foreach ($reprizy as $r): ?>
+                                    <li>
+                                        <?php echo date('d.m.Y H:i', strtotime($r['datum_cas'])); ?>
+                                        (Voľné miesta: <?= htmlspecialchars($r['kapacita']) ?>)
+                                        
+                                        <form method="POST" style="display:inline;"
+                                              onsubmit="return confirm('Naozaj chcete kúpiť lístok na tento dátum?');">
+                                            <input type="hidden" name="repriza_id" value="<?= $r['id'] ?>">
+                                            <button type="submit" <?= ($r['kapacita'] <= 0) ? 'disabled' : '' ?>>Kúpiť lístok</button>
+                                        </form>
+
+                                        <?php if ($r['kapacita'] <= 0): ?>
+                                            <span style="color: red;">(Vypredané)</span>
+                                        <?php endif; ?>
+                                    </li>
+                                <?php endforeach; ?>
+                            </ul>
+                        <?php else: ?>
+                            Posledné predstavenie: <?php echo date('d.m.Y', strtotime($predstavenie['koniec_hrania'])); ?>
+                        <?php endif; ?>
+                    </h4>
+                    <p><?php echo nl2br(htmlspecialchars($predstavenie['popis'])); ?></p>
                 </div>
-              </div>
+
+            <div class="accordion" id="accordionExample">
+                <?php foreach ($questions as $index => $q): ?>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="heading<?= $index ?>">
+                            <button class="accordion-button <?= $index !== 0 ? 'collapsed' : '' ?>" type="button" data-bs-toggle="collapse" data-bs-target="#collapse<?= $index ?>" aria-expanded="<?= $index === 0 ? 'true' : 'false' ?>" aria-controls="collapse<?= $index ?>">
+                                <?= htmlspecialchars($q['otazka']) ?>
+                            </button>
+                        </h2>
+                        <div id="collapse<?= $index ?>" class="accordion-collapse collapse <?= $index === 0 ? 'show' : '' ?>" aria-labelledby="heading<?= $index ?>" data-bs-parent="#accordionExample">
+                            <div class="accordion-body">
+                                <?= nl2br(htmlspecialchars($q['odpoved'])) ?>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
             </div>
-            <div class="accordion-item">
-              <h2 class="accordion-header" id="headingThree">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                  Why is Villa the best ?
-                </button>
-              </h2>
-              <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
-                <div class="accordion-body">
-                  Dolor <strong>almesit amet</strong>, consectetur adipiscing elit, sed doesn't eiusmod tempor kinfolk tonx seitan crucifix 3 wolf moon bicycle rights keffiyeh snackwave wolf same vice, chillwave vexillologist incididunt ut labore consectetur <code>adipiscing</code> elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
-        <div class="col-lg-4">
-          <div class="info-table">
-            <ul>
-              <li>
-                <img src="assets/images/info-icon-01.png" alt="" style="max-width: 52px;">
-                <h4>450 m2<br><span>Total Flat Space</span></h4>
-              </li>
-              <li>
-                <img src="assets/images/info-icon-02.png" alt="" style="max-width: 52px;">
-                <h4>Contract<br><span>Contract Ready</span></h4>
-              </li>
-              <li>
-                <img src="assets/images/info-icon-03.png" alt="" style="max-width: 52px;">
-                <h4>Payment<br><span>Payment Process</span></h4>
-              </li>
-              <li>
-                <img src="assets/images/info-icon-04.png" alt="" style="max-width: 52px;">
-                <h4>Safety<br><span>24/7 Under Control</span></h4>
-              </li>
-            </ul>
-          </div>
+            <div class="col-lg-4">
+                <div class="info-table">
+                    <ul>
+                        <li>
+                            <h4>Vekové obmedzenie<br>
+                                <span>
+            <?php
+            if (!empty($predstavenie['vekove_obmedzenie'])) {
+                echo "Nie je vhodné pre divákov mladších ako " . htmlspecialchars($predstavenie['vekove_obmedzenie']) . " rokov";
+            } else {
+                echo "Bez obmedzenia";
+            }
+            ?>
+          </span>
+                            </h4>
+                        </li>
+                        <li>
+                            <h4>Trvanie<br>
+                                <span>
+            <?php
+            if (!empty($predstavenie['trvanie'])) {
+                echo htmlspecialchars($predstavenie['trvanie']) . " minút";
+            } else {
+                echo "Neuvedené";
+            }
+            ?>
+          </span>
+                            </h4>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
         </div>
       </div>
     </div>

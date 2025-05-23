@@ -33,29 +33,27 @@ $reprizy = $hra->getUpcomingUniqueReprizy();
         <?php foreach ($reprizy as $index => $repriza): ?>
             <?php $obrazky = $hra->getObrazkyByHraId($repriza['predstavenie_id']); ?>
             <div class="item">
-                <div class="header-text" style="margin-left: 300px;">
+                <div class="header-textx">
                   <span class="category">
                     <em><?php echo date('d.m.Y H:i', strtotime($repriza['najblizsia_repriza'])); ?></em>
                   </span>
                     <h3>Príďte sa pozrieť!</h3>
-                    <h2 style="color: #2c0b0e;white-space: nowrap;">
+                    <h2 style="color: #2c0b0e;">
                         <a href="detail-predstavenia.php?id=<?php echo urlencode($repriza['predstavenie_id']); ?>" style="color: inherit; text-decoration: none;">
                             <?php echo htmlspecialchars($repriza['nazov']); ?>
                         </a>
                     </h2>
                 </div>
-                <div class="d-flex flex-wrap gap-2 justify-content-center">
+                <div class="obrazky-wrapper">
                     <?php if (!empty($obrazky)): ?>
                         <?php foreach (array_slice($obrazky, 0, 3) as $obrazok): ?>
                             <a href="detail-predstavenia.php?id=<?= urlencode($repriza['predstavenie_id']) ?>">
                                 <img src="assets/images/<?= htmlspecialchars($obrazok) ?>"
-                                     alt="Obrázok predstavenia"
-                                     style="height: 400px; width: auto; border-radius: 8px;">
+                                     alt="Obrázok predstavenia">
                             </a>
                         <?php endforeach; ?>
                     <?php else: ?>
-                        <img src="assets/images/featured1.jpg" alt="Bez obrázku"
-                             style="height: 400px; margin: 0 300px; border-radius: 8px; object-fit: cover;">
+                        <img src="assets/images/featured1.jpg" alt="Bez obrázku" class="obrazok-default">
                     <?php endif; ?>
                 </div>
             </div>
@@ -69,7 +67,7 @@ $reprizy = $hra->getUpcomingUniqueReprizy();
         <div class="row">
             <div class="col-lg-4">
                 <div class="left-image">
-                    <img src="assets/images/dsdk_logo.png" alt="">
+                    <img src="assets/images/dsdk_logo.png" alt="" style="max-width: 400px;height: auto;">
                 </div>
             </div>
 

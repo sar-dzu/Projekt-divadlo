@@ -385,6 +385,16 @@ Header Style
   transition: all .5s ease 0s;
 }
 
+.header-textx {
+  margin-left: 300px;
+}
+
+@media (max-width: 900px) {
+  .header-textx {
+    margin-left: 10px;
+  }
+}
+
 .header-area {
   position: relative;
   background-color: #fff;
@@ -728,6 +738,45 @@ Header Style
     padding-right: 0px !important;
   }
   
+}
+
+.obrazky-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem; /* alebo gap: 1rem; podľa vkusu */
+  justify-content: center;
+}
+
+.obrazky-wrapper a img {
+  height: 400px;
+  width: auto;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+@media (max-width: 800px) {
+  .obrazky-wrapper a img {
+    height: 200px;  /* menšie na mobile */
+    margin: 0 10px;
+  }
+  .obrazky-wrapper {
+    gap: 0.3rem;
+    justify-content: flex-start; /* alebo center podľa dizajnu */
+  }
+}
+
+.obrazok-default {
+  height: 400px;
+  border-radius: 8px;
+  object-fit: cover;
+  margin: 0 300px;
+}
+
+@media (max-width: 900px) {
+  .obrazok-default {
+    margin: 0 10px;
+    height: 200px;
+  }
 }
 
 
@@ -1363,9 +1412,7 @@ Page Header Style
 */
 
 .page-heading {
-  background-image: url(../images/page-heading-bg.jpg);
-  background-position: center bottom;
-  background-repeat: no-repeat;
+  background-color: #2c0b0e;
   background-size: cover;
   padding: 110px 0px;
   text-align: center;

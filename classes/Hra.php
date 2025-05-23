@@ -139,17 +139,29 @@ class Hra
     public function getByCategory($nazovKategorie)
     {
         $sql = "
-        SELECT h.*
+        SELECT h.*,
+               (SELECT obrazok 
+                FROM hra_obrazky 
+                WHERE hra_id = h.id 
+                ORDER BY id ASC 
+                LIMIT 1) AS hlavny_obrazok,
+               GROUP_CONCAT(k2.nazov SEPARATOR ', ') AS kategorie
         FROM predstavenia h
         JOIN predstavenie_kategoria pk ON h.id = pk.predstavenie_id
         JOIN kategorie k ON k.id = pk.kategoria_id
+        -- Pripojenie všetkých kategórií k danej hre (nielen filtrovanej)
+        JOIN predstavenie_kategoria pk2 ON h.id = pk2.predstavenie_id
+        JOIN kategorie k2 ON k2.id = pk2.kategoria_id
         WHERE k.nazov = :nazov
+        GROUP BY h.id
         ORDER BY h.zaciatok_hrania ASC
     ";
         $stmt = $this->conn->prepare($sql);
         $stmt->execute([':nazov' => $nazovKategorie]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+
     public function getReprizy($predstavenieId)
     {
         $sql = "SELECT * FROM reprizy WHERE predstavenie_id = :id AND datum_cas >= NOW() ORDER BY datum_cas ASC";
@@ -157,6 +169,7 @@ class Hra
         $stmt->execute(['id' => $predstavenieId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
     public function getUpcomingUniqueReprizy($limit = 5)
     {
         $sql = "
@@ -216,7 +229,7 @@ class Hra
         $stmt->execute(['id' => $hraId]);
         return $stmt->fetchAll(PDO::FETCH_COLUMN);
     }
-    public function kupitListok($reprizaId): bool {
+    public function buyTicket($reprizaId): bool {
         // Najprv získať kapacitu
         $sql = "SELECT kapacita FROM reprizy WHERE id = :id";
         $stmt = $this->conn->prepare($sql);
@@ -236,5 +249,41 @@ class Hra
         $stmt = $this->conn->prepare($sql);
         return $stmt->execute(['id' => $reprizaId]);
     }
+
+    public function getOldestYear(): ?int
+    {
+        $sql = "SELECT MIN(zaciatok_hrania) AS najstarsie FROM predstavenia";
+        $stmt = $this->conn->query($sql);
+        $result = $stmt->fetch();
+
+        if ($result && $result['najstarsie']) {
+            return (int)date('Y', strtotime($result['najstarsie']));
+        }
+
+        return null;
+    }
+
+    public function getLatestPredstavenie()
+    {
+        $sql = "
+        SELECT 
+            p.*, 
+            (
+                SELECT obrazok 
+                FROM hra_obrazky 
+                WHERE hra_id = p.id 
+                ORDER BY id ASC 
+                LIMIT 1
+            ) AS hlavny_obrazok
+        FROM predstavenia p
+        WHERE p.zaciatok_hrania = (
+            SELECT MAX(zaciatok_hrania) FROM predstavenia
+        )
+        LIMIT 1
+    ";
+        $stmt = $this->conn->query($sql);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
 
 }

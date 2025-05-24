@@ -64,119 +64,128 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['repriza_id'])) {
 <div class="single-property section">
     <div class="container">
         <div class="row">
-            <div class="col-lg-8">
-                <div class="main-image" style="position: relative; max-height: 550px; width: auto;">
-                    <button id="prevBtn" style="position: absolute; top: 50%; left: 10px; z-index: 10;">&#10094;</button>
-                    <img id="carouselImage" src="assets/images/<?php echo htmlspecialchars($obrazky[0]); ?>" alt="" style="max-height: 550px; width: auto; display: block; margin: 0 auto;">
-                    <button id="nextBtn" style="position: absolute; top: 50%; right: 10px; z-index: 10;">&#10095;</button>
+            <div class="row mb-4">
+                <!-- Carousel obrázkov -->
+                <div class="col-12 col-md-8">
+                    <div class="main-image" style="position: relative; text-align: center;">
+                        <!-- LEFT BUTTON -->
+                        <button id="prevBtn"
+                                style="position: absolute; top: 50%; left: 0; transform: translateY(-50%); z-index: 10;
+                       background: rgba(255,255,255,0.7); border: none; font-size: 24px; padding: 8px 12px;
+                       cursor: pointer; border-radius: 50%;">
+                            &#10094;
+                        </button>
+
+                        <!-- IMAGE -->
+                        <img id="carouselImage"
+                             src="assets/images/<?php echo htmlspecialchars($obrazky[0]); ?>"
+                             alt="Obrázok predstavenia"
+                             style="
+                               display: block;
+                               margin-left: auto;
+                               margin-right: auto;
+                               max-height: 500px;
+                               height: auto;
+                               max-width: 100%;
+                               width: auto;
+                               border-radius: 8px;
+                             ">
+
+                        <!-- RIGHT BUTTON -->
+                        <button id="nextBtn"
+                                style="position: absolute; top: 50%; right: 0; transform: translateY(-50%); z-index: 10;
+                       background: rgba(255,255,255,0.7); border: none; font-size: 24px; padding: 8px 12px;
+                       cursor: pointer; border-radius: 50%;">
+                            &#10095;
+                        </button>
+                    </div>
                 </div>
 
-                <script>
-                    const images = <?php echo json_encode($obrazky); ?>;
-                    let currentIndex = 0;
-
-                    const imgElement = document.getElementById('carouselImage');
-                    const prevBtn = document.getElementById('prevBtn');
-                    const nextBtn = document.getElementById('nextBtn');
-
-                    prevBtn.addEventListener('click', () => {
-                        currentIndex = (currentIndex - 1 + images.length) % images.length;
-                        imgElement.src = "assets/images/" + images[currentIndex];
-                    });
-
-                    nextBtn.addEventListener('click', () => {
-                        currentIndex = (currentIndex + 1) % images.length;
-                        imgElement.src = "assets/images/" + images[currentIndex];
-                    });
-                </script>
-
-                <div class="main-content">
-                    <?php if ($message): ?>
-                        <div style="background-color: #d4edda; color: #155724; padding: 10px; margin-bottom: 1rem; border-radius: 5px;">
-                            <?= htmlspecialchars($message) ?>
-                        </div>
-                    <?php endif; ?>
-
-                    <span class="category"><?php echo htmlspecialchars($predstavenie['kategorie']); ?></span>
-
-                    <h4>
-                        <?php if (!empty($reprizy)): ?>
-                            Nadchádzajúce predstavenia:
-                            <ul>
-                                <?php foreach ($reprizy as $r): ?>
-                                    <li>
-                                        <?php echo date('d.m.Y H:i', strtotime($r['datum_cas'])); ?>
-                                        (Voľné miesta: <?= htmlspecialchars($r['kapacita']) ?>)
-                                        
-                                        <form method="POST" style="display:inline;"
-                                              onsubmit="return confirm('Naozaj chcete kúpiť lístok na tento dátum?');">
-                                            <input type="hidden" name="repriza_id" value="<?= $r['id'] ?>">
-                                            <button type="submit" <?= ($r['kapacita'] <= 0) ? 'disabled' : '' ?>>Kúpiť lístok</button>
-                                        </form>
-
-                                        <?php if ($r['kapacita'] <= 0): ?>
-                                            <span style="color: red;">(Vypredané)</span>
-                                        <?php endif; ?>
-                                    </li>
-                                <?php endforeach; ?>
-                            </ul>
-                        <?php else: ?>
-                            Posledné predstavenie: <?php echo date('d.m.Y', strtotime($predstavenie['koniec_hrania'])); ?>
-                        <?php endif; ?>
-                    </h4>
-                    <p><?php echo nl2br(htmlspecialchars($predstavenie['popis'])); ?></p>
+                <!-- Info tabuľka -->
+                <div class="col-12 col-md-4">
+                    <div class="info-table">
+                        <ul>
+                            <li>
+                                <h4>Vekové obmedzenie<br>
+                                    <span>
+                        <?= !empty($predstavenie['vekove_obmedzenie']) ?
+                            "Nie je vhodné pre divákov mladších ako " . htmlspecialchars($predstavenie['vekove_obmedzenie']) . " rokov"
+                            : "Bez obmedzenia" ?>
+                        </span>
+                                </h4>
+                            </li>
+                            <li>
+                                <h4>Trvanie<br>
+                                    <span>
+                        <?= !empty($predstavenie['trvanie']) ?
+                            htmlspecialchars($predstavenie['trvanie']) . " minút"
+                            : "Neuvedené" ?>
+                        </span>
+                                </h4>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
+            </div>
 
-            <div class="accordion" id="accordionExample">
-                <?php foreach ($questions as $index => $q): ?>
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="heading<?= $index ?>">
-                            <button class="accordion-button <?= $index !== 0 ? 'collapsed' : '' ?>" type="button" data-bs-toggle="collapse" data-bs-target="#collapse<?= $index ?>" aria-expanded="<?= $index === 0 ? 'true' : 'false' ?>" aria-controls="collapse<?= $index ?>">
-                                <?= htmlspecialchars($q['otazka']) ?>
-                            </button>
-                        </h2>
-                        <div id="collapse<?= $index ?>" class="accordion-collapse collapse <?= $index === 0 ? 'show' : '' ?>" aria-labelledby="heading<?= $index ?>" data-bs-parent="#accordionExample">
-                            <div class="accordion-body">
-                                <?= nl2br(htmlspecialchars($q['odpoved'])) ?>
+            <!-- Zvyšný obsah pod tým -->
+            <div class="main-content">
+                <?php if ($message): ?>
+                    <div style="background-color: #d4edda; color: #155724; padding: 10px; margin-bottom: 1rem; border-radius: 5px;">
+                        <?= htmlspecialchars($message) ?>
+                    </div>
+                <?php endif; ?>
+
+                <span class="category"><?= htmlspecialchars($predstavenie['kategorie']); ?></span>
+
+
+                <?php if (!empty($reprizy)): ?>
+                    <h4>Nadchádzajúce predstavenia:</h4>
+                    <ul>
+                        <?php foreach ($reprizy as $r): ?>
+                            <li style="margin-bottom: 1rem;">
+                                <h5><?= date('d.m.Y H:i', strtotime($r['datum_cas'])); ?></h5>
+                                (Voľné miesta: <?= htmlspecialchars($r['kapacita']) ?>)
+                                <form method="POST" style="display:inline;"
+                                      onsubmit="return confirm('Naozaj chcete kúpiť lístok na tento dátum?');">
+                                    <input type="hidden" name="repriza_id" value="<?= $r['id'] ?>">
+                                    <button type="submit" <?= ($r['kapacita'] <= 0) ? 'disabled' : '' ?>>Kúpiť lístok</button>
+                                </form>
+                                <?php if ($r['kapacita'] <= 0): ?>
+                                    <span style="color: red;">(Vypredané)</span>
+                                <?php endif; ?>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                <?php else: ?>
+                    <h4>Posledné predstavenie: <?= date('d.m.Y', strtotime($predstavenie['koniec_hrania'])); ?></h4>
+                <?php endif; ?>
+
+
+                <p><?= nl2br(htmlspecialchars($predstavenie['popis'])); ?></p>
+
+                <!-- Accordion -->
+                <div class="accordion" id="accordionExample">
+                    <?php foreach ($questions as $index => $q): ?>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading<?= $index ?>">
+                                <button class="accordion-button <?= $index !== 0 ? 'collapsed' : '' ?>" type="button"
+                                        data-bs-toggle="collapse" data-bs-target="#collapse<?= $index ?>"
+                                        aria-expanded="<?= $index === 0 ? 'true' : 'false' ?>" aria-controls="collapse<?= $index ?>">
+                                    <?= htmlspecialchars($q['otazka']) ?>
+                                </button>
+                            </h2>
+                            <div id="collapse<?= $index ?>"
+                                 class="accordion-collapse collapse <?= $index === 0 ? 'show' : '' ?>"
+                                 aria-labelledby="heading<?= $index ?>" data-bs-parent="#accordionExample">
+                                <div class="accordion-body">
+                                    <?= nl2br(htmlspecialchars($q['odpoved'])) ?>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                <?php endforeach; ?>
-            </div>
-        </div>
-            <div class="col-lg-4">
-                <div class="info-table">
-                    <ul>
-                        <li>
-                            <h4>Vekové obmedzenie<br>
-                                <span>
-            <?php
-            if (!empty($predstavenie['vekove_obmedzenie'])) {
-                echo "Nie je vhodné pre divákov mladších ako " . htmlspecialchars($predstavenie['vekove_obmedzenie']) . " rokov";
-            } else {
-                echo "Bez obmedzenia";
-            }
-            ?>
-          </span>
-                            </h4>
-                        </li>
-                        <li>
-                            <h4>Trvanie<br>
-                                <span>
-            <?php
-            if (!empty($predstavenie['trvanie'])) {
-                echo htmlspecialchars($predstavenie['trvanie']) . " minút";
-            } else {
-                echo "Neuvedené";
-            }
-            ?>
-          </span>
-                            </h4>
-                        </li>
-                    </ul>
+                    <?php endforeach; ?>
                 </div>
             </div>
-
         </div>
       </div>
     </div>
@@ -298,3 +307,23 @@ if (!include $file_path) {
 }
 ?>
 
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const images = <?php echo json_encode($obrazky); ?>;
+        let currentIndex = 0;
+
+        const imgElement = document.getElementById('carouselImage');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+
+        prevBtn.addEventListener('click', () => {
+            currentIndex = (currentIndex - 1 + images.length) % images.length;
+            imgElement.src = "assets/images/" + images[currentIndex];
+        });
+
+        nextBtn.addEventListener('click', () => {
+            currentIndex = (currentIndex + 1) % images.length;
+            imgElement.src = "assets/images/" + images[currentIndex];
+        });
+    });
+</script>

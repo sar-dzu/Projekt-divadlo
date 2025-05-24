@@ -170,6 +170,25 @@ class Hra
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function getUpcomingReprizy($limit = 6)
+    {
+        $sql = "
+        SELECT r.*, p.nazov, p.vekove_obmedzenie, p.trvanie, p.id AS predstavenie_id,
+               (SELECT obrazok FROM hra_obrazky WHERE hra_id = p.id ORDER BY RAND() LIMIT 1) AS obrazok
+        FROM reprizy r
+        JOIN predstavenia p ON r.predstavenie_id = p.id
+        WHERE r.datum_cas >= NOW()
+        ORDER BY r.datum_cas ASC
+        LIMIT :limit
+    ";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function getUpcomingUniqueReprizy($limit = 5)
     {
         $sql = "

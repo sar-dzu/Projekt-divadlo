@@ -1272,7 +1272,7 @@ Contact Style
 }
 
 .contact-content {
-  margin-top: -240px;
+  margin-top: 3rem;
   position: relative;
   z-index: 1;
 }

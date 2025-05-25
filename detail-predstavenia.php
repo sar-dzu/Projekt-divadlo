@@ -53,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['repriza_id'])) {
         <div class="container">
             <div class="row">
                 <div class="col-lg-12">
-                    <span class="breadcrumb"><a href="index.php">Home</a>  /  <?php echo htmlspecialchars($predstavenie['nazov']); ?></span>
+                    <span class="breadcrumb"><a href="index.php">Home</a>  / <a href="predstavenia.php">Predstavenia</a> /  <?php echo htmlspecialchars($predstavenie['nazov']); ?></span>
                     <h3><?php echo htmlspecialchars($predstavenie['nazov']); ?></h3>
                 </div>
             </div>

@@ -8,10 +8,12 @@ require_once 'db/config.php';
 require_once 'classes/Database.php';
 require_once 'classes/Hra.php';
 require_once 'classes/Faq.php';
+require_once 'classes/Formular.php';
 
 use Classes\Database;
 use Classes\Hra;
 use Classes\Faq;
+use Classes\Formular;
 
 $db = new Database();
 $hra = new Hra($db);
@@ -24,6 +26,27 @@ $questions = $faq->getAll();
 
 $reprizy = $hra->getUpcomingUniqueReprizy();
 $sestRepriz = $hra->getUpcomingReprizy();
+
+$formular = new Formular($db);
+
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $meno = $_POST['meno'] ?? '';
+    $email = $_POST['email'] ?? '';
+    $predmet = $_POST['predmet'] ?? '';
+    $sprava = $_POST['sprava'] ?? '';
+
+    if (!empty($meno) && !empty($email) && !empty($sprava)) {
+        $ulozene = $formular->saveMessage($meno, $email, $predmet, $sprava);
+        if ($ulozene) {
+            header("Location: contact.php?success=1");
+        } else {
+            header("Location: contact.php?error=db");
+        }
+    } else {
+        header("Location: contact.php?error=1");
+    }
+    exit;
+}
 ?>
 
 <!-- ***** Header Area End ***** -->
@@ -269,6 +292,14 @@ $sestRepriz = $hra->getUpcomingReprizy();
         <div class="section-heading text-center">
             <h6>| Sídlo</h6>
             <h2>Tu nás nájdeš, alebo nás kokntaktuj</h2>
+            <?php if (isset($_GET['success'])): ?>
+                <div class="alert alert-success">Správa bola úspešne odoslaná.</div>
+            <?php elseif (isset($_GET['error'])): ?>
+                <div class="alert alert-danger">
+                    <?= $_GET['error'] === '1' ? 'Vyplň prosím všetky povinné polia.' : 'Nastala chyba pri ukladaní správy.' ?>
+                </div>
+            <?php endif; ?>
+
         </div>
       <div class="row">
         <div class="col-lg-7">
@@ -291,39 +322,40 @@ $sestRepriz = $hra->getUpcomingReprizy();
           </div>
         </div>
         <div class="col-lg-5">
-          <form id="contact-form" action="" method="post">
-            <div class="row">
-              <div class="col-lg-12">
-                <fieldset>
-                  <label for="name">Full Name</label>
-                  <input type="name" name="name" id="name" placeholder="Your Name..." autocomplete="on" required>
-                </fieldset>
-              </div>
-              <div class="col-lg-12">
-                <fieldset>
-                  <label for="email">Email Address</label>
-                  <input type="text" name="email" id="email" pattern="[^ @]*@[^ @]*" placeholder="Your E-mail..." required="">
-                </fieldset>
-              </div>
-              <div class="col-lg-12">
-                <fieldset>
-                  <label for="subject">Subject</label>
-                  <input type="subject" name="subject" id="subject" placeholder="Subject..." autocomplete="on" >
-                </fieldset>
-              </div>
-              <div class="col-lg-12">
-                <fieldset>
-                  <label for="message">Message</label>
-                  <textarea name="message" id="message" placeholder="Your Message"></textarea>
-                </fieldset>
-              </div>
-              <div class="col-lg-12">
-                <fieldset>
-                  <button type="submit" id="form-submit" class="orange-button">Send Message</button>
-                </fieldset>
-              </div>
-            </div>
-          </form>
+            <form id="contact-form" action="" method="post">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <fieldset>
+                            <label for="meno">Meno</label>
+                            <input type="text" name="meno" id="meno" placeholder="Tvoje meno..." required>
+                        </fieldset>
+                    </div>
+                    <div class="col-lg-12">
+                        <fieldset>
+                            <label for="email">Email</label>
+                            <input type="email" name="email" id="email" placeholder="Tvoj e-mail..." required>
+                        </fieldset>
+                    </div>
+                    <div class="col-lg-12">
+                        <fieldset>
+                            <label for="predmet">Predmet</label>
+                            <input type="text" name="predmet" id="predmet" placeholder="Predmet správy...">
+                        </fieldset>
+                    </div>
+                    <div class="col-lg-12">
+                        <fieldset>
+                            <label for="sprava">Správa</label>
+                            <textarea name="sprava" id="sprava" placeholder="Tvoja správa..." required></textarea>
+                        </fieldset>
+                    </div>
+                    <div class="col-lg-12">
+                        <fieldset>
+                            <button type="submit" class="orange-button">Odoslať správu</button>
+                        </fieldset>
+                    </div>
+                </div>
+            </form>
+
         </div>
       </div>
     </div>

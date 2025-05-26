@@ -304,5 +304,30 @@ class Hra
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
+    public function getHraCount() {
+        $stmt = $this->conn->query("SELECT COUNT(*) FROM predstavenia");
+        return $stmt->fetchColumn();
+    }
+
+    public function getHryLimit($offset, $limit) {
+        $stmt = $this->conn->prepare("SELECT * FROM predstavenia ORDER BY nazov ASC LIMIT :limit OFFSET :offset");
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+    public function getRecommendedHra($excludeId)
+    {
+        $sql = "SELECT h.*, r.datum_cas,
+                   (SELECT obrazok FROM hra_obrazky WHERE hra_id = h.id ORDER BY id ASC LIMIT 1) AS hlavny_obrazok
+            FROM predstavenia h
+            JOIN reprizy r ON h.id = r.predstavenie_id
+            WHERE h.id != :excludeId AND r.datum_cas > NOW()
+            ORDER BY r.datum_cas ASC
+            LIMIT 1";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute(['excludeId' => $excludeId]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 
 }

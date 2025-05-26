@@ -17,7 +17,7 @@ $menu = getMenuData("header");
                     <!-- ***** Menu Start ***** -->
                     <ul class="nav">
                         <?php printMenu($menu);?>
-                        <li><a href="#"><i class="fa fa-calendar"></i> Navštívte nás</a></li>
+                        <li><a href="index.php#nextShows"><i class="fa fa-calendar"></i> Najbližšie predstavenia</a></li>
                     </ul>
                     <a class='menu-trigger'>
                         <span>Menu</span>

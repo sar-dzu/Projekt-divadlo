@@ -1,5 +1,33 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', '1');
+
 include_once('parts/head.php');
+
+require_once 'db/config.php';
+require_once 'classes/Database.php';
+require_once 'classes/Hra.php';
+
+use Classes\Database;
+use Classes\Hra;
+
+$db = new Database();
+$hraObj = new Hra($db);
+$predstavenia = $hraObj->getAllOrderedByDateLogic();
+
+
+require_once 'classes/Hra.php';
+
+$kategoria = $_GET['kategoria'] ?? null;
+
+if ($kategoria) {
+    $hry = $hraObj->getByCategory($kategoria);
+} else {
+    $hry = $hraObj->getAllOrderedByDateLogic();
+}
+$kategorie = $hraObj->getAllCategories();
+
+
 ?>
 
   <!-- ***** Header Area End ***** -->
@@ -17,194 +45,67 @@ include_once('parts/head.php');
 
   <div class="section properties">
     <div class="container">
-      <ul class="properties-filter">
-        <li>
-          <a class="is_active" href="#!" data-filter="*">Show All</a>
-        </li>
-        <li>
-          <a href="#!" data-filter=".adv">Apartment</a>
-        </li>
-        <li>
-          <a href="#!" data-filter=".str">Villa House</a>
-        </li>
-        <li>
-          <a href="#!" data-filter=".rac">Penthouse</a>
-        </li>
-      </ul>
-      <div class="row properties-box">
-        <div class="col-lg-4 col-md-6 align-self-center mb-30 properties-items col-md-6 adv">
-          <div class="item">
-            <a href="detail-predstavenia.php"><img src="assets/images/property-01.jpg" alt=""></a>
-            <span class="category">Luxury Villa</span>
-            <h6>$2.264.000</h6>
-            <h4><a href="detail-predstavenia.php">18 Old Street Miami, OR 97219</a></h4>
-            <ul>
-              <li>Bedrooms: <span>8</span></li>
-              <li>Bathrooms: <span>8</span></li>
-              <li>Area: <span>545m2</span></li>
-              <li>Floor: <span>3</span></li>
-              <li>Parking: <span>6 spots</span></li>
-            </ul>
-            <div class="main-button">
-              <a href="detail-predstavenia.php">Schedule a visit</a>
-            </div>
-          </div>
+        <ul class="properties-filter">
+            <li><a class="<?= !$kategoria ? 'is_active' : '' ?>" href="vsetky-hry.php">Zobraziť všetky</a></li>
+            <?php foreach ($kategorie as $kat): ?>
+                <?php
+                $katSlug = strtolower(preg_replace('/\s+/', '-', $kat['nazov']));
+                $isActive = ($kategoria === $kat['nazov']) ? 'is_active' : '';
+                ?>
+                <li>
+                    <a class="<?= $isActive ?>" href="?kategoria=<?= urlencode($kat['nazov']) ?>" data-filter=".<?= $katSlug ?>">
+                        <?= htmlspecialchars($kat['nazov']) ?>
+                    </a>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+
+        <div class="row properties-box">
+            <?php foreach ($hry as $hra): ?>
+                <?php
+                // CSS triedy z kategórií
+                $kategorieTriedy = '';
+                if (!empty($hra['kategorie'])) {
+                    $kategorieArray = array_map('trim', explode(',', $hra['kategorie']));
+                    $kategorieTriedy = implode(' ', array_map(function ($k) {
+                        return strtolower(preg_replace('/\s+/', '-', $k));
+                    }, $kategorieArray));
+                }
+                ?>
+                <div class="col-lg-4 col-md-6 align-self-center mb-30 properties-items <?= $kategorieTriedy ?>">
+                    <div class="item">
+                        <a href="detail-predstavenia.php?id=<?= $hra['id'] ?>">
+                            <?php if (!empty($hra['hlavny_obrazok'])): ?>
+                                <img src="assets/images/<?= htmlspecialchars($hra['hlavny_obrazok'], ENT_QUOTES, 'UTF-8') ?>"
+                                     alt="<?= htmlspecialchars($hra['nazov'] ?? 'Neznámy názov', ENT_QUOTES, 'UTF-8') ?>"
+                                     style="object-fit: cover; width: 100%; aspect-ratio: 1 / 1;">
+                            <?php else: ?>
+                                <img src="assets/images/featured1.jpg"
+                                     alt="Bez obrázku"
+                                     style="object-fit: cover; width: 100%; aspect-ratio: 1 / 1;">
+                            <?php endif; ?>
+                        </a>
+
+                        <span class="category"><?= htmlspecialchars($hra['kategorie']) ?></span>
+
+                        <ul>
+                            <li>Vekové obmedzenie:
+                                <span>
+                                  <?= $hra['vekove_obmedzenie'] ? "od " . htmlspecialchars($hra['vekove_obmedzenie']) . " rokov" : "Bez obmedzenia" ?>
+                                </span>
+                            </li>
+                            <li>Dĺžka predstavenia:
+                                <span><?= $hra['trvanie'] ? htmlspecialchars($hra['trvanie']) . " minút" : "Neuvedené" ?></span>
+                            </li>
+                            <li>Vstupné: <span>Dobrovoľné</span></li>
+                        </ul>
+                        <div class="main-button">
+                            <a href="detail-predstavenia.php?id=<?= $hra['id'] ?>">Zobraziť detaily</a>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
         </div>
-        <div class="col-lg-4 col-md-6 align-self-center mb-30 properties-items col-md-6 str">
-          <div class="item">
-            <a href="detail-predstavenia.php"><img src="assets/images/property-02.jpg" alt=""></a>
-            <span class="category">Luxury Villa</span>
-            <h6>$1.180.000</h6>
-            <h4><a href="detail-predstavenia.php">54 New Street Florida, OR 27001</a></h4>
-            <ul>
-              <li>Bedrooms: <span>6</span></li>
-              <li>Bathrooms: <span>5</span></li>
-              <li>Area: <span>450m2</span></li>
-              <li>Floor: <span>3</span></li>
-              <li>Parking: <span>8 spots</span></li>
-            </ul>
-            <div class="main-button">
-              <a href="detail-predstavenia.php">Schedule a visit</a>
-            </div>
-          </div>
-        </div>
-        <div class="col-lg-4 col-md-6 align-self-center mb-30 properties-items col-md-6 adv rac">
-          <div class="item">
-            <a href="detail-predstavenia.php"><img src="assets/images/property-03.jpg" alt=""></a>
-            <span class="category">Luxury Villa</span>
-            <h6>$1.460.000</h6>
-            <h4><a href="detail-predstavenia.php">26 Mid Street Portland, OR 38540</a></h4>
-            <ul>
-              <li>Bedrooms: <span>5</span></li>
-              <li>Bathrooms: <span>4</span></li>
-              <li>Area: <span>225m2</span></li>
-              <li>Floor: <span>3</span></li>
-              <li>Parking: <span>10 spots</span></li>
-            </ul>
-            <div class="main-button">
-              <a href="detail-predstavenia.php">Schedule a visit</a>
-            </div>
-          </div>
-        </div>
-        <div class="col-lg-4 col-md-6 align-self-center mb-30 properties-items col-md-6 str">
-          <div class="item">
-            <a href="detail-predstavenia.php"><img src="assets/images/property-04.jpg" alt=""></a>
-            <span class="category">Apartment</span>
-            <h6>$584.500</h6>
-            <h4><a href="detail-predstavenia.php">12 Hope Street Portland, OR 12650</a></h4>
-            <ul>
-              <li>Bedrooms: <span>4</span></li>
-              <li>Bathrooms: <span>3</span></li>
-              <li>Area: <span>125m2</span></li>
-              <li>Floor: <span>25th</span></li>
-              <li>Parking: <span>2 cars</span></li>
-            </ul>
-            <div class="main-button">
-              <a href="detail-predstavenia.php">Schedule a visit</a>
-            </div>
-          </div>
-        </div>
-        <div class="col-lg-4 col-md-6 align-self-center mb-30 properties-items col-md-6 rac str">
-          <div class="item">
-            <a href="detail-predstavenia.php"><img src="assets/images/property-05.jpg" alt=""></a>
-            <span class="category">Penthouse</span>
-            <h6>$925.600</h6>
-            <h4><a href="detail-predstavenia.php">34 Hope Street Portland, OR 42680</a></h4>
-            <ul>
-              <li>Bedrooms: <span>4</span></li>
-              <li>Bathrooms: <span>4</span></li>
-              <li>Area: <span>180m2</span></li>
-              <li>Floor: <span>38th</span></li>
-              <li>Parking: <span>2 cars</span></li>
-            </ul>
-            <div class="main-button">
-              <a href="detail-predstavenia.php">Schedule a visit</a>
-            </div>
-          </div>
-        </div>
-        <div class="col-lg-4 col-md-6 align-self-center mb-30 properties-items col-md-6 rac adv">
-          <div class="item">
-            <a href="detail-predstavenia.php"><img src="assets/images/property-06.jpg" alt=""></a>
-            <span class="category">Modern Condo</span>
-            <h6>$450.000</h6>
-            <h4><a href="detail-predstavenia.php">22 Hope Street Portland, OR 16540</a></h4>
-            <ul>
-              <li>Bedrooms: <span>3</span></li>
-              <li>Bathrooms: <span>2</span></li>
-              <li>Area: <span>165m2</span></li>
-              <li>Floor: <span>26th</span></li>
-              <li>Parking: <span>3 cars</span></li>
-            </ul>
-            <div class="main-button">
-              <a href="detail-predstavenia.php">Schedule a visit</a>
-            </div>
-          </div>
-        </div>
-        <div class="col-lg-4 col-md-6 align-self-center mb-30 properties-items col-md-6 rac str">
-          <div class="item">
-            <a href="detail-predstavenia.php"><img src="assets/images/property-03.jpg" alt=""></a>
-            <span class="category">Luxury Villa</span>
-            <h6>$980.000</h6>
-            <h4><a href="detail-predstavenia.php">14 Mid Street Miami, OR 36450</a></h4>
-            <ul>
-              <li>Bedrooms: <span>8</span></li>
-              <li>Bathrooms: <span>8</span></li>
-              <li>Area: <span>550m2</span></li>
-              <li>Floor: <span>3</span></li>
-              <li>Parking: <span>12 spots</span></li>
-            </ul>
-            <div class="main-button">
-              <a href="detail-predstavenia.php">Schedule a visit</a>
-            </div>
-          </div>
-        </div>
-        <div class="col-lg-4 col-md-6 align-self-center mb-30 properties-items col-md-6 rac adv">
-          <div class="item">
-            <a href="detail-predstavenia.php"><img src="assets/images/property-02.jpg" alt=""></a>
-            <span class="category">Luxury Villa</span>
-            <h6>$1.520.000</h6>
-            <h4><a href="detail-predstavenia.php">26 Old Street Miami, OR 12870</a></h4>
-            <ul>
-              <li>Bedrooms: <span>12</span></li>
-              <li>Bathrooms: <span>15</span></li>
-              <li>Area: <span>380m2</span></li>
-              <li>Floor: <span>3</span></li>
-              <li>Parking: <span>14 spots</span></li>
-            </ul>
-            <div class="main-button">
-              <a href="detail-predstavenia.php">Schedule a visit</a>
-            </div>
-          </div>
-        </div>
-        <div class="col-lg-4 col-md-6 align-self-center mb-30 properties-items col-md-6 rac adv">
-          <div class="item">
-            <a href="detail-predstavenia.php"><img src="assets/images/property-01.jpg" alt=""></a>
-            <span class="category">Luxury Villa</span>
-            <h6>$3.145.000</h6>
-            <h4><a href="detail-predstavenia.php">34 New Street Miami, OR 24650</a></h4>
-            <ul>
-              <li>Bedrooms: <span>10</span></li>
-              <li>Bathrooms: <span>12</span></li>
-              <li>Area: <span>860m2</span></li>
-              <li>Floor: <span>3</span></li>
-              <li>Parking: <span>10 spots</span></li>
-            </ul>
-            <div class="main-button">
-              <a href="detail-predstavenia.php">Schedule a visit</a>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-lg-12">
-          <ul class="pagination">
-            <li><a href="#">1</a></li>
-            <li><a class="is_active" href="#">2</a></li>
-            <li><a href="#">3</a></li>
-            <li><a href="#">>></a></li>
-          </ul>
-        </div>
-      </div>
     </div>
   </div>
 

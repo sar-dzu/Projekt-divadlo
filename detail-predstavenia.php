@@ -45,6 +45,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['repriza_id'])) {
     }
 }
 
+// odporucane
+$idAktualneho = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+$odporucane = $hra->getRecommendedHra($idAktualneho);
+
 ?>
 
   <!-- ***** Header Area End ***** -->
@@ -189,116 +193,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['repriza_id'])) {
         </div>
       </div>
     </div>
-  </div>
 
-  <div class="section best-deal">
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-4">
-          <div class="section-heading">
-            <h6>| Best Deal</h6>
-            <h2>Find Your Best Deal Right Now!</h2>
-          </div>
-        </div>
-        <div class="col-lg-12">
-          <div class="tabs-content">
+
+    <div class="section best-deal">
+        <div class="container">
             <div class="row">
-              <div class="nav-wrapper ">
-                <ul class="nav nav-tabs" role="tablist">
-                  <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="appartment-tab" data-bs-toggle="tab" data-bs-target="#appartment" type="button" role="tab" aria-controls="appartment" aria-selected="true">Appartment</button>
-                  </li>
-                  <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="villa-tab" data-bs-toggle="tab" data-bs-target="#villa" type="button" role="tab" aria-controls="villa" aria-selected="false">Villa House</button>
-                  </li>
-                  <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="penthouse-tab" data-bs-toggle="tab" data-bs-target="#penthouse" type="button" role="tab" aria-controls="penthouse" aria-selected="false">Penthouse</button>
-                  </li>
-                </ul>
-              </div>              
-              <div class="tab-content" id="myTabContent">
-                <div class="tab-pane fade show active" id="appartment" role="tabpanel" aria-labelledby="appartment-tab">
-                  <div class="row">
-                    <div class="col-lg-3">
-                      <div class="info-table">
-                        <ul>
-                          <li>Total Flat Space <span>540 m2</span></li>
-                          <li>Floor number <span>3</span></li>
-                          <li>Number of rooms <span>8</span></li>
-                          <li>Parking Available <span>Yes</span></li>
-                          <li>Payment Process <span>Bank</span></li>
-                        </ul>
-                      </div>
+                <div class="col-lg-12">
+                    <div class="section-heading">
+                        <h6>| Odporúčame</h6>
+                        <h2>Pozrite si aj toto predstavenie</h2>
                     </div>
-                    <div class="col-lg-6">
-                      <img src="assets/images/deal-01.jpg" alt="">
-                    </div>
-                    <div class="col-lg-3">
-                      <h4>All Info About Apartment</h4>
-                      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, do eiusmod tempor pack incididunt ut labore et dolore magna aliqua quised ipsum suspendisse. <br><br>Swag fanny pack lyft blog twee. JOMO ethical copper mug, succulents typewriter shaman DIY kitsch twee taiyaki fixie hella venmo after messenger poutine next level humblebrag swag franzen.</p>
-                      <div class="icon-button">
-                        <a href="#"><i class="fa fa-calendar"></i> Schedule a visit</a>
-                      </div>
-                    </div>
-                  </div>
                 </div>
-                <div class="tab-pane fade" id="villa" role="tabpanel" aria-labelledby="villa-tab">
-                  <div class="row">
-                    <div class="col-lg-3">
-                      <div class="info-table">
-                        <ul>
-                          <li>Total Flat Space <span>250 m2</span></li>
-                          <li>Floor number <span>26th</span></li>
-                          <li>Number of rooms <span>5</span></li>
-                          <li>Parking Available <span>Yes</span></li>
-                          <li>Payment Process <span>Bank</span></li>
+
+                <?php if ($odporucane): ?>
+                    <div class="col-lg-4">
+                        <img src="assets/images/<?= htmlspecialchars($odporucane['hlavny_obrazok'] ?? 'featured1.jpg') ?>" alt="<?= htmlspecialchars($odporucane['nazov']) ?>" class="img-fluid">
+                    </div>
+                    <div class="col-lg-8">
+                        <h4 style="margin-bottom: 1rem;"><?= htmlspecialchars($odporucane['nazov']) ?></h4>
+                        <ul style="margin-bottom: 1rem;">
+                            <li>Dátum: <span><?= date('d.m.Y H:i', strtotime($odporucane['datum_cas'])) ?></span></li>
+                            <li>Dĺžka predstavenia: <span><?= htmlspecialchars($odporucane['trvanie']) ?> min</span></li>
+                            <li>Vekové obmedzenie:
+                                <span><?= $odporucane['vekove_obmedzenie'] ? 'od ' . htmlspecialchars($odporucane['vekove_obmedzenie']) . ' rokov' : 'Bez obmedzenia' ?></span>
+                            </li>
                         </ul>
-                      </div>
+                        <p><?= htmlspecialchars($odporucane['popis']) ?></p>
+                        <div class="icon-button">
+                            <a href="detail-predstavenia.php?id=<?= $odporucane['id'] ?>"><i class="fa fa-calendar"></i> Zobraziť detail</a>
+                        </div>
                     </div>
-                    <div class="col-lg-6">
-                      <img src="assets/images/deal-02.jpg" alt="">
+                <?php else: ?>
+                    <div class="col-lg-12">
+                        <p>Momentálne nemáme iné odporúčané predstavenie.</p>
                     </div>
-                    <div class="col-lg-3">
-                      <h4>Detail Info About New Villa</h4>
-                      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, do eiusmod tempor pack incididunt ut labore et dolore magna aliqua quised ipsum suspendisse. <br><br>Swag fanny pack lyft blog twee. JOMO ethical copper mug, succulents typewriter shaman DIY kitsch twee taiyaki fixie hella venmo after messenger poutine next level humblebrag swag franzen.</p>
-                      <div class="icon-button">
-                        <a href="#"><i class="fa fa-calendar"></i> Schedule a visit</a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="tab-pane fade" id="penthouse" role="tabpanel" aria-labelledby="penthouse-tab">
-                  <div class="row">
-                    <div class="col-lg-3">
-                      <div class="info-table">
-                        <ul>
-                          <li>Total Flat Space <span>320 m2</span></li>
-                          <li>Floor number <span>34th</span></li>
-                          <li>Number of rooms <span>6</span></li>
-                          <li>Parking Available <span>Yes</span></li>
-                          <li>Payment Process <span>Bank</span></li>
-                        </ul>
-                      </div>
-                    </div>
-                    <div class="col-lg-6">
-                      <img src="assets/images/deal-03.jpg" alt="">
-                    </div>
-                    <div class="col-lg-3">
-                      <h4>Extra Info About Penthouse</h4>
-                      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, do eiusmod tempor pack incididunt ut Kinfolk tonx seitan crucifix 3 wolf moon bicycle rights keffiyeh snackwave wolf same vice, chillwave vexillologistlabore et dolore magna aliqua quised ipsum suspendisse. <br><br>Swag fanny pack lyft blog twee. JOMO ethical copper mug, succulents typewriter shaman DIY kitsch twee taiyaki fixie hella venmo after messenger poutine next level humblebrag swag franzen.</p>
-                      <div class="icon-button">
-                        <a href="#"><i class="fa fa-calendar"></i> Schedule a visit</a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+                <?php endif; ?>
             </div>
-          </div>
         </div>
-      </div>
     </div>
-  </div>
+
 
 <?php
 $file_path = "parts/footer.php";

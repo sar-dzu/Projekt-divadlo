@@ -246,7 +246,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             <div class="col-lg-4 offset-lg-4">
                 <div class="section-heading text-center">
                     <h6>| Nadchádzajúce predstavenia</h6>
-                    <h2>Vyber si niečo, čo ťa zaujme</h2>
+                    <h2 id="nextShows">Vyber si niečo, čo ťa zaujme</h2>
                 </div>
             </div>
         </div>

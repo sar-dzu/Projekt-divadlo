@@ -1,4 +1,10 @@
 <?php
+session_start();
+if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
+    header('Location: index.php'); // alebo prihlasenie.php
+    exit;
+}
+
 require_once 'db/config.php';
 require_once 'classes/Database.php';
 require_once 'classes/Hra.php';
@@ -6,11 +12,6 @@ require_once 'classes/Hra.php';
 use Classes\Database;
 use Classes\Hra;
 
-session_start();
-if (!isset($_SESSION['admin']) || $_SESSION['admin'] !== true) {
-    header('Location: ../index.php');
-    exit();
-}
 
 if (!isset($_GET['id'])) {
     die("Chýba ID hry.");

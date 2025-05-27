@@ -1,4 +1,9 @@
 <?php
+session_start();
+if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
+    header('Location: index.php'); // alebo prihlasenie.php
+    exit;
+}
 error_reporting(E_ALL);
 ini_set('display_errors', '1');
 
@@ -9,12 +14,7 @@ require_once 'classes/Hra.php';
 use Classes\Database;
 use Classes\Hra;
 
-session_start();
-$_SESSION['admin'] = true;
-if (!isset($_SESSION['admin']) || $_SESSION['admin'] !== true) {
-    header('Location: ../index.php');
-    exit();
-}
+
 
 $database = new Database();
 $hraObj = new Hra($database);

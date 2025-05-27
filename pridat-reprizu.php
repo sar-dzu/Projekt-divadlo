@@ -1,4 +1,9 @@
 <?php
+session_start();
+if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
+    header('Location: index.php'); // alebo prihlasenie.php
+    exit;
+}
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
@@ -7,6 +12,7 @@ require_once 'classes/Database.php';
 
 $database = new \Classes\Database();
 $conn = $database->getConnection();
+
 
 $error = '';
 

@@ -1,6 +1,17 @@
 <?php
 include_once "functions.php";
 
+require_once 'db/config.php';
+require_once 'classes/Database.php';
+require_once 'classes/Admin.php';
+
+use Classes\Admin;
+use Classes\Database;
+
+$database = new Database();
+$admin = new Admin($database);
+
+
 $menu = getMenuData("header");
 ?>
 
@@ -16,8 +27,14 @@ $menu = getMenuData("header");
                     <!-- ***** Logo End ***** -->
                     <!-- ***** Menu Start ***** -->
                     <ul class="nav">
-                        <?php printMenu($menu);?>
+                        <?php printMenu($menu); ?>
                         <li><a href="index.php#nextShows"><i class="fa fa-calendar"></i> Najbližšie predstavenia</a></li>
+
+                        <?php if ($admin->isLoggedIn()): ?>
+                            <li><a href="odhlasenie.php"><i class="fa fa-sign-out"></i> Odhlásiť sa</a></li>
+                        <?php else: ?>
+                            <li><a href="prihlasenie.php"><i class="fa fa-sign-in"></i> Prihlásiť sa</a></li>
+                        <?php endif; ?>
                     </ul>
                     <a class='menu-trigger'>
                         <span>Menu</span>

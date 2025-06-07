@@ -1,4 +1,5 @@
 <?php
+session_start();
 error_reporting(E_ALL);
 ini_set('display_errors', '1');
 
@@ -85,7 +86,7 @@ $kategorie = $hraObj->getAllCategories();
                                      style="object-fit: cover; width: 100%; aspect-ratio: 1 / 1;">
                             <?php endif; ?>
                         </a>
-
+                        <h4><?= htmlspecialchars($hra['nazov']) ?></h4>
                         <span class="category"><?= htmlspecialchars($hra['kategorie']) ?></span>
 
                         <ul>

@@ -5,17 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c2301c2e-4ca6-49ef-956b-8bcdf0ef8a4e" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/classes/Admin.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/odhlasenie.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/prihlasenie.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/classes/Hra.php" beforeDir="false" afterPath="$PROJECT_DIR$/classes/Hra.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/contact.php" beforeDir="false" afterPath="$PROJECT_DIR$/contact.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/detail-predstavenia.php" beforeDir="false" afterPath="$PROJECT_DIR$/detail-predstavenia.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/index.php" beforeDir="false" afterPath="$PROJECT_DIR$/index.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/parts/header.php" beforeDir="false" afterPath="$PROJECT_DIR$/parts/header.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pridat-hra.php" beforeDir="false" afterPath="$PROJECT_DIR$/pridat-hra.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pridat-reprizu.php" beforeDir="false" afterPath="$PROJECT_DIR$/pridat-reprizu.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/upravit-hra.php" beforeDir="false" afterPath="$PROJECT_DIR$/upravit-hra.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vymazat-hra.php" beforeDir="false" afterPath="$PROJECT_DIR$/vymazat-hra.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vymazat-reprizu.php" beforeDir="false" afterPath="$PROJECT_DIR$/vymazat-reprizu.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/zobrazit-hry.php" beforeDir="false" afterPath="$PROJECT_DIR$/zobrazit-hry.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/predstavenia.php" beforeDir="false" afterPath="$PROJECT_DIR$/predstavenia.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -87,7 +83,9 @@
       <workItem from="1748244504406" duration="4535000" />
       <workItem from="1748249079657" duration="17000" />
       <workItem from="1748329824222" duration="1052000" />
-      <workItem from="1748333041414" duration="3572000" />
+      <workItem from="1748333041414" duration="4220000" />
+      <workItem from="1748957274636" duration="24000" />
+      <workItem from="1749285024169" duration="3622000" />
     </task>
     <servers />
   </component>

@@ -1,18 +1,29 @@
 <?php
 session_start();
+error_reporting(E_ALL);
+ini_set('display_errors', '1');
+
 include_once('parts/head.php');
 
 require_once 'db/config.php';
 require_once 'classes/Database.php';
 require_once 'classes/Hra.php';
 require_once 'classes/Faq.php';
+require_once 'classes/Repriza.php';
+require_once 'classes/Obrazok.php';
+
 
 use Classes\Faq;
 use Classes\Database;
 use Classes\Hra;
+use Classes\Repriza;
+use Classes\Obrazok;
+
 
 $db = new Database();
 $hra = new Hra($db);
+$repriza = new Repriza($db);
+$obrazok = new Obrazok($db);
 
 
 $faq = new Faq($db);
@@ -24,12 +35,12 @@ $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
 // Získaj údaje o predstavení podľa ID
 $predstavenie = $hra->getHraById($id);
-$reprizy = $hra->getReprizy($id);
+$reprizy = $repriza->getReprizy($id);
 if (!$predstavenie) {
     die('Predstavenie nebolo nájdené.');
 }
 
-$obrazky = $hra->getObrazkyByHraId($id);
+$obrazky = $obrazok->getObrazkyByHraId($id);
 if (empty($obrazky)) {
     $obrazky = ['featured1.jpg']; // fallback, ak nemá obrázky
 }
@@ -37,10 +48,10 @@ if (empty($obrazky)) {
 $message = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['repriza_id'])) {
     $reprizaId = (int)$_POST['repriza_id'];
-    if ($hra->buyTicket($reprizaId)) {
+    if ($repriza->buyTicket($reprizaId)) {
         $message = "Lístok bol úspešne zakúpený.";
         // Obnovíme reprízy, aby sa aktualizovala kapacita
-        $reprizy = $hra->getReprizy($id);
+        $reprizy = $repriza->getReprizy($id);
     } else {
         $message = "Lístok sa nepodarilo zakúpiť (možno už nie sú voľné miesta).";
     }
@@ -162,8 +173,10 @@ $odporucane = $hra->getRecommendedHra($idAktualneho);
                             </li>
                         <?php endforeach; ?>
                     </ul>
-                <?php else: ?>
+                <?php elseif (!empty($predstavenie['koniec_hrania'])): ?>
                     <h4>Posledné predstavenie: <?= date('d.m.Y', strtotime($predstavenie['koniec_hrania'])); ?></h4>
+                <?php else: ?>
+                    <h4>Zatiaľ nie sú nadchádzajúce reprízy, pre prípadný záujem <a href="contact.php">nás kontaktujte</a>.</h4>
                 <?php endif; ?>
 
 

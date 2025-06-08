@@ -9,24 +9,33 @@ require_once 'db/config.php';
 require_once 'classes/Database.php';
 require_once 'classes/Hra.php';
 require_once 'classes/Faq.php';
+require_once 'classes/Repriza.php';
+require_once 'classes/Obrazok.php';
+require_once 'classes/Kategoria.php';
 require_once 'classes/Formular.php';
 
+use Classes\Faq;
 use Classes\Database;
 use Classes\Hra;
-use Classes\Faq;
+use Classes\Repriza;
+use Classes\Obrazok;
+use Classes\Kategoria;
 use Classes\Formular;
 
 $db = new Database();
 $hra = new Hra($db);
+$repriza = new Repriza($db);
+$obrazok = new Obrazok($db);
+$kategoria = new Kategoria($db);
 
 $najnovsiePredstavenie = $hra->getLatestPredstavenie();
-$reprizyNove = $hra->getReprizy($najnovsiePredstavenie['id']);
+$reprizyNove = $repriza->getReprizy($najnovsiePredstavenie['id']);
 
 $faq = new Faq($db);
 $questions = $faq->getAll();
 
-$reprizy = $hra->getUpcomingUniqueReprizy();
-$sestRepriz = $hra->getUpcomingReprizy();
+$reprizy = $repriza->getUpcomingUniqueReprizy();
+$sestRepriz = $repriza->getUpcomingReprizy();
 
 $formular = new Formular($db);
 
@@ -54,25 +63,25 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 <div class="main-banner" >
     <div class="owl-carousel owl-banner">
-        <?php foreach ($reprizy as $index => $repriza): ?>
-            <?php $obrazky = $hra->getObrazkyByHraId($repriza['predstavenie_id']); ?>
+        <?php foreach ($reprizy as $index => $r): ?>
+            <?php $obrazky = $obrazok->getObrazkyByHraId($r['predstavenie_id']); ?>
             <div class="item">
                 <div class="header-textx">
                   <span class="category">
-                    <em><?php echo date('d.m.Y H:i', strtotime($repriza['najblizsia_repriza'])); ?></em>
+                    <em><?php echo date('d.m.Y H:i', strtotime($r['najblizsia_repriza'])); ?></em>
                   </span>
                     <h3>Príďte sa pozrieť!</h3>
                     <h2 style="color: #2c0b0e;">
-                        <a href="detail-predstavenia.php?id=<?php echo urlencode($repriza['predstavenie_id']); ?>" style="color: inherit; text-decoration: none;">
-                            <?php echo htmlspecialchars($repriza['nazov']); ?>
+                        <a href="detail-predstavenia.php?id=<?php echo urlencode($r['predstavenie_id']); ?>" style="color: inherit; text-decoration: none;">
+                            <?php echo htmlspecialchars($r['nazov']); ?>
                         </a>
                     </h2>
                 </div>
                 <div class="obrazky-wrapper">
                     <?php if (!empty($obrazky)): ?>
-                        <?php foreach (array_slice($obrazky, 0, 3) as $obrazok): ?>
-                            <a href="detail-predstavenia.php?id=<?= urlencode($repriza['predstavenie_id']) ?>">
-                                <img src="assets/images/<?= htmlspecialchars($obrazok) ?>"
+                        <?php foreach (array_slice($obrazky, 0, 3) as $o): ?>
+                            <a href="detail-predstavenia.php?id=<?= urlencode($r['predstavenie_id']) ?>">
+                                <img src="assets/images/<?= htmlspecialchars($o) ?>"
                                      alt="Obrázok predstavenia">
                             </a>
                         <?php endforeach; ?>
@@ -208,8 +217,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                                             $daysOfWeek = json_decode($daysJson, true);
 
                                             // Príklad použitia v slučke, kde máš dátum reprízy
-                                            foreach ($reprizyNove as $repriza) {
-                                                $datum = $repriza['datum_cas'] ?? null;
+                                            foreach ($reprizyNove as $r) {
+                                                $datum = $r['datum_cas'] ?? null;
                                                 if ($datum && strtotime($datum)) {
                                                     $englishDay = date('l', strtotime($datum));
                                                     $slovakDay = $daysOfWeek[$englishDay] ?? $englishDay; // fallback na angličtinu

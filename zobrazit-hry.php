@@ -10,22 +10,29 @@ ini_set('display_errors', '1');
 require_once 'db/config.php';
 require_once 'classes/Database.php';
 require_once 'classes/Hra.php';
+require_once 'classes/Repriza.php';
+require_once 'classes/Obrazok.php';
+require_once 'classes/Kategoria.php';
 
 use Classes\Database;
 use Classes\Hra;
-
-
+use Classes\Repriza;
+use Classes\Obrazok;
+use Classes\Kategoria;
 
 $database = new Database();
 $hraObj = new Hra($database);
+$repriza = new Repriza($database);
+$obrazok = new Obrazok($database);
+$kategoriaHry = new Kategoria($database);
 $kategoria = $_GET['kategoria'] ?? null;
 
 if ($kategoria) {
-    $hry = $hraObj->getByCategory($kategoria);
+    $hry = $kategoriaHry->getByCategory($kategoria);
 } else {
     $hry = $hraObj->getAllOrderedByDateLogic();
 }
-$kategorie = $hraObj->getAllCategories();
+$kategorie = $kategoriaHry->getAllCategories();
 ?>
 
 <?php require_once 'parts/head.php'?>
@@ -68,7 +75,7 @@ $kategorie = $hraObj->getAllCategories();
                     return strtolower(preg_replace('/\s+/', '-', $k));
                 }, $katArray));
             }
-            $reprizy = $hraObj->getReprizy($hra['id']);
+            $reprizy = $repriza->getReprizy($hra['id']);
             ?>
 
             <div class="hra-box <?= $katClasses ?>">

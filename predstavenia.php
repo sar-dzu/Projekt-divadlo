@@ -8,25 +8,30 @@ include_once('parts/head.php');
 require_once 'db/config.php';
 require_once 'classes/Database.php';
 require_once 'classes/Hra.php';
+require_once 'classes/Obrazok.php';
+require_once 'classes/Kategoria.php';
 
 use Classes\Database;
 use Classes\Hra;
+use Classes\Obrazok;
+use Classes\Kategoria;
 
 $db = new Database();
 $hraObj = new Hra($db);
+$obrazok = new Obrazok($db);
+$kategoriaHry = new Kategoria($db);
 $predstavenia = $hraObj->getAllOrderedByDateLogic();
-
 
 require_once 'classes/Hra.php';
 
 $kategoria = $_GET['kategoria'] ?? null;
 
 if ($kategoria) {
-    $hry = $hraObj->getByCategory($kategoria);
+    $hry = $kategoriaHry->getByCategory($kategoria);
 } else {
     $hry = $hraObj->getAllOrderedByDateLogic();
 }
-$kategorie = $hraObj->getAllCategories();
+$kategorie = $kategoriaHry->getAllCategories();
 
 
 ?>

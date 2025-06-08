@@ -1,61 +1,70 @@
 <?php
 session_start();
 if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
-    header('Location: index.php'); // alebo prihlasenie.php
+    header('Location: index.php');
     exit;
 }
+
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-require_once "db/config.php";
+require_once 'db/config.php';
 require_once 'classes/Database.php';
 require_once 'classes/Hra.php';
+require_once 'classes/Repriza.php';
+require_once 'classes/Obrazok.php';
+require_once 'classes/Kategoria.php';
 
 use Classes\Database;
 use Classes\Hra;
-
-
+use Classes\Repriza;
+use Classes\Obrazok;
+use Classes\Kategoria;
 
 $database = new Database();
 $hra = new Hra($database);
+$repriza = new Repriza($database);
+$obrazok = new Obrazok($database);
+$kategoria = new Kategoria($database);
 
-$sql = "SELECT * FROM kategorie";
-$stmt = $database->getConnection()->prepare($sql);
-$stmt->execute();
-$kategorie = $stmt->fetchAll(PDO::FETCH_ASSOC);
+// Získanie všetkých kategórií pre formulár
+$kategorie = $kategoria->getAllCategories();
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $nazov = $_POST['nazov'];
-    $popis = $_POST['popis'];
-    $zaciatok = $_POST['zaciatok'];
-    $koniec = $_POST['koniec'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $nazov = $_POST['nazov'] ?? '';
+    $popis = $_POST['popis'] ?? '';
+    $zaciatok = $_POST['zaciatok'] ?? '';
+    $koniec = $_POST['koniec'] ?? '';
     $koniec = $koniec === '' ? null : $koniec;
-    $trvanie = (int) $_POST['trvanie'];
-    $vek = (int) $_POST['vek'];
+    $trvanie = (int) ($_POST['trvanie'] ?? 0);
+    $vek = (int) ($_POST['vek'] ?? 0);
+
     if (!empty($nazov) && !empty($popis) && !empty($zaciatok) && $trvanie > 0 && $vek >= 0) {
         try {
             $success = $hra->create($nazov, $popis, $zaciatok, $koniec, $trvanie, $vek);
             if ($success) {
-                $hra_id=$hra->getLastInsertedId();
-                // spracovanie kategórií
+                $hra_id = $hra->getLastInsertedId();
+
+                // Priradenie kategórií
                 if (!empty($_POST['kategorie'])) {
-                    $hra->addCategories($hra_id, $_POST['kategorie']);
+                    $kategoria->addCategories($hra_id, $_POST['kategorie']);
                 }
-                // obrázky
-                if(!empty($_FILES['obrazky']['name']) && is_array($_FILES['obrazky']['name'])) {
+
+                // Pridanie obrázkov
+                if (!empty($_FILES['obrazky']['name']) && is_array($_FILES['obrazky']['name'])) {
                     foreach ($_FILES['obrazky']['tmp_name'] as $key => $tmp_name) {
                         $obrazok_nazov = basename($_FILES['obrazky']['name'][$key]);
                         $target = "assets/images/" . $obrazok_nazov;
                         if (move_uploaded_file($tmp_name, $target)) {
-                            $hra->addImage($hra_id, $obrazok_nazov);
+                            $obrazok->addImage($hra_id, $obrazok_nazov);
                         }
                     }
                 }
-                $msg = "Predstavenie bolo úspešne pridané";
+
                 header("Location: pridat-hra.php?success=1");
-                exit();
+                exit;
             } else {
-                $error = "Nepodarilo sa pridať predstavenie";
+                $error = "Nepodarilo sa pridať predstavenie.";
             }
         } catch (Exception $e) {
             $error = "Chyba: " . $e->getMessage();
@@ -115,15 +124,13 @@ if (isset($_GET['success']) && $_GET['success'] == 1) {
         </div>
 
         <div class="form-group">
-            <label for="trvanie">Dĺžka predstavenia</label>
-            <input type="number" name="trvanie" id="trvanie" class="form-control" required>
+            <label for="trvanie">Dĺžka predstavenia (v minútach)</label>
+            <input type="number" name="trvanie" id="trvanie" class="form-control" required min="20" max="240">
         </div>
-
         <div class="form-group">
             <label for="vek">Vekové obmedzenie</label>
-            <input type="number" name="vek" id="vek" class="form-control" required>
+            <input type="number" name="vek" id="vek" class="form-control" required min="0" max="18">
         </div>
-
         <div>
             <label for="obrazky">Vyberte obrázky:</label>
             <input type="file" name="obrazky[]" multiple>

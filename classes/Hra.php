@@ -50,8 +50,19 @@ class Hra
     }
 
     public function delete(int $id): bool {
-        $sql = "DELETE FROM predstavenia WHERE id = :id";
-        $stmt = $this->conn->prepare($sql);
+        $stmt = $this->conn->prepare("SELECT obrazok FROM hra_obrazky WHERE hra_id = :id");
+        $stmt->execute(['id' => $id]);
+        $obrazky = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($obrazky as $obrazok) {
+            $path = "assets/images/" . $obrazok['obrazok'];
+            if (file_exists($path)) {
+                unlink($path);
+            }
+        }
+        $this->conn->prepare("DELETE FROM hra_obrazky WHERE hra_id = :id")->execute(['id' => $id]);
+        $this->conn->prepare("DELETE FROM predstavenie_kategoria WHERE predstavenie_id = :id")->execute(['id' => $id]);
+        $stmt = $this->conn->prepare("DELETE FROM predstavenia WHERE id = :id");
         return $stmt->execute(['id' => $id]);
     }
 
@@ -151,7 +162,7 @@ class Hra
         $stmt = $this->conn->query($sql);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
-    
+
     public function getRecommendedHra($excludeId)
     {
         $sql = "SELECT h.*, r.datum_cas,
@@ -166,182 +177,4 @@ class Hra
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-
-    /*
-
-
-    REPRIZA
-
-
-    */
-
-    public function getReprizy($predstavenieId)
-    {
-        $sql = "SELECT * FROM reprizy WHERE predstavenie_id = :id AND datum_cas >= NOW() ORDER BY datum_cas ASC";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->execute(['id' => $predstavenieId]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    public function getUpcomingReprizy($limit = 6)
-    {
-        $sql = "
-        SELECT r.*, p.nazov, p.vekove_obmedzenie, p.trvanie, p.id AS predstavenie_id,
-               (SELECT obrazok FROM hra_obrazky WHERE hra_id = p.id ORDER BY RAND() LIMIT 1) AS obrazok
-        FROM reprizy r
-        JOIN predstavenia p ON r.predstavenie_id = p.id
-        WHERE r.datum_cas >= NOW()
-        ORDER BY r.datum_cas ASC
-        LIMIT :limit
-    ";
-
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
-        $stmt->execute();
-
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    public function getUpcomingUniqueReprizy($limit = 5)
-    {
-        $sql = "
-        SELECT 
-            r.predstavenie_id, 
-            MIN(r.datum_cas) AS najblizsia_repriza, 
-            p.nazov, 
-            (
-                SELECT ho.obrazok 
-                FROM hra_obrazky ho 
-                WHERE ho.hra_id = p.id 
-                ORDER BY ho.id ASC 
-                LIMIT 1
-            ) AS obrazok
-        FROM reprizy r
-        JOIN predstavenia p ON r.predstavenie_id = p.id
-        WHERE r.datum_cas >= NOW()
-        GROUP BY r.predstavenie_id
-        ORDER BY najblizsia_repriza ASC
-        LIMIT :limit
-    ";
-
-        $stmt = $this->conn->prepare($sql); // použiješ PDO spojenie z konštruktora
-        $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    public function buyTicket($reprizaId): bool {
-        // Najprv získať kapacitu
-        $sql = "SELECT kapacita FROM reprizy WHERE id = :id";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->execute(['id' => $reprizaId]);
-        $repriza = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if (!$repriza) {
-            return false; // repríza neexistuje
-        }
-
-        if ($repriza['kapacita'] <= 0) {
-            return false; // kapacita vyčerpaná
-        }
-
-        // Znížiť kapacitu o 1
-        $sql = "UPDATE reprizy SET kapacita = kapacita - 1 WHERE id = :id";
-        $stmt = $this->conn->prepare($sql);
-        return $stmt->execute(['id' => $reprizaId]);
-    }
-
-    /*
-
-
-    KATEGORIE
-
-
-    */
-
-    public function addCategories(int $hraId, array $kategorie): bool {
-        $sql = "INSERT INTO predstavenie_kategoria (predstavenie_id, kategoria_id) VALUES (:hraId, :kategoriaId)";
-        $stmt = $this->conn->prepare($sql);
-        foreach ($kategorie as $kategoriaId) {
-            $stmt->execute([
-                'hraId' => $hraId,
-                'kategoriaId' => $kategoriaId
-            ]);
-        }
-        return true;
-    }
-
-    public function updateCategories($id, $categories) {
-        // Najprv vymazať staré kategórie
-        $sql = "DELETE FROM predstavenie_kategoria WHERE predstavenie_id = :id";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->execute([':id' => $id]);
-
-        // Potom pridať nové kategórie
-        foreach ($categories as $category_id) {
-            $sql = "INSERT INTO predstavenie_kategoria (predstavenie_id, kategoria_id) VALUES (:hra_id, :kategoria_id)";
-            $stmt = $this->conn->prepare($sql);
-            $stmt->execute([
-                ':hra_id' => $id,
-                ':kategoria_id' => $category_id
-            ]);
-        }
-    }
-
-    public function getAllCategories() {
-        $sql = "SELECT id, nazov FROM kategorie ORDER BY nazov";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    public function getByCategory($nazovKategorie)
-    {
-        $sql = "
-        SELECT h.*,
-               (SELECT obrazok 
-                FROM hra_obrazky 
-                WHERE hra_id = h.id 
-                ORDER BY id ASC 
-                LIMIT 1) AS hlavny_obrazok,
-               GROUP_CONCAT(k2.nazov SEPARATOR ', ') AS kategorie
-        FROM predstavenia h
-        JOIN predstavenie_kategoria pk ON h.id = pk.predstavenie_id
-        JOIN kategorie k ON k.id = pk.kategoria_id
-        -- Pripojenie všetkých kategórií k danej hre (nielen filtrovanej)
-        JOIN predstavenie_kategoria pk2 ON h.id = pk2.predstavenie_id
-        JOIN kategorie k2 ON k2.id = pk2.kategoria_id
-        WHERE k.nazov = :nazov
-        GROUP BY h.id
-        ORDER BY h.zaciatok_hrania ASC
-    ";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->execute([':nazov' => $nazovKategorie]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-
-    /*
-
-
-    OBRAZOK
-
-
-    */
-
-    public function addImage(int $hraId, string $obrazok): bool {
-        $sql = "INSERT INTO hra_obrazky (hra_id, obrazok) VALUES (:hra_id, :obrazok)";
-        $stmt = $this->conn->prepare($sql);
-        return $stmt->execute([
-            'hra_id' => $hraId,
-            'obrazok' => $obrazok
-        ]);
-    }
-
-    public function getObrazkyByHraId($hraId) {
-        $sql = "SELECT obrazok FROM hra_obrazky WHERE hra_id = :id ORDER BY id ASC";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->execute(['id' => $hraId]);
-        return $stmt->fetchAll(PDO::FETCH_COLUMN);
-    }
 }

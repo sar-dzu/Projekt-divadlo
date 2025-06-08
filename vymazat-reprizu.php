@@ -1,21 +1,23 @@
 <?php
 session_start();
 if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
-    header('Location: index.php'); // alebo prihlasenie.php
+    header('Location: index.php');
     exit;
 }
+
 require_once 'db/config.php';
 require_once 'classes/Database.php';
+require_once 'classes/Repriza.php';
 
-$database = new \Classes\Database();
-$conn = $database->getConnection();
+use Classes\Database;
+use Classes\Repriza;
 
-
+$database = new Database();
+$repriza = new Repriza($database);
 
 if (isset($_GET['id'])) {
-    $stmt = $conn->prepare("DELETE FROM reprizy WHERE id = :id");
-    $stmt->execute(['id' => $_GET['id']]);
+    $repriza->deleteRepriza((int)$_GET['id']);
 }
 
 header('Location: zobrazit-hry.php');
-exit();
+exit;

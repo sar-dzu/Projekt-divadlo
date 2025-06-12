@@ -59,12 +59,24 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
           </div>
           <p>Či už máte pozitívne, negatívne ohlasy na naše predstavenia, alebo akékoľvek nezodpovedané otázky, sme tu pre Vás.</p>
           <div class="row">
-            <div class="col-lg-12">
-              <div class="item phone">
-                <img src="assets/images/phone-icon.png" alt="" style="max-width: 52px;">
-                <h6>010-020-0340<br><span>Phone Number</span></h6>
-              </div>
-            </div>
+              <?php if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true): ?>
+                  <div class="col-lg-6">
+                      <div class="item">
+                          <img src="assets/images/email-icon.png" alt="" style="max-width: 52px;">
+                          <h6>
+                              <a href="zobrazit-spravy.php" class="btn btn-primary">📩 Prezrieť správy</a><br>
+                              <span>Kontaktné správy</span>
+                          </h6>
+                      </div>
+                  </div>
+              <?php else: ?>
+                  <div class="col-lg-6">
+                      <div class="item phone">
+                          <img src="assets/images/phone-icon.png" alt="" style="max-width: 52px;">
+                          <h6>010-020-0340<br><span>Phone Number</span></h6>
+                      </div>
+                  </div>
+              <?php endif; ?>
             <div class="col-lg-12">
               <div class="item email">
                 <img src="assets/images/email-icon.png" alt="" style="max-width: 52px;">

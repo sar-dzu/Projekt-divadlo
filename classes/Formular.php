@@ -21,5 +21,19 @@ class Formular
             ':sprava' => $sprava
         ]);
     }
+    public function getAll() {
+        $stmt = $this->conn->query("SELECT * FROM kontaktne_spravy ORDER BY datum DESC");
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
 
+    public function getById($id) {
+        $stmt = $this->conn->prepare("SELECT * FROM kontaktne_spravy WHERE id = ?");
+        $stmt->execute([$id]);
+        return $stmt->fetch(\PDO::FETCH_ASSOC);
+    }
+
+    public function delete($id) {
+        $stmt = $this->conn->prepare("DELETE FROM kontaktne_spravy WHERE id = ?");
+        return $stmt->execute([$id]);
+    }
 }
